@@ -1,0 +1,23 @@
+﻿.imgpos {
+    border: 0;
+}
+.cropwrap i,b {
+    cursor: pointer;
+    width: 90px;
+    height: 90px;
+    position: relative;
+    display: none;
+}
+
+.cropwrap b{
+    background: url("../images/souldout.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+}
+
+.cropwrap .tip {
+    position: relative;
+}
+
+.cropwrap a {
+    text-decoration: none;
+    outline: 0 none;
+}

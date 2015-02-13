@@ -1,0 +1,125 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>ccweditor 使用帮助</title>
+    <script src="../../lib/jquery-1.11.1.min.js"></script>
+    <script src="../../css/uikit/js/uikit.min.js"></script>
+    <link href="../../css/uikit/css/uikit.gradient.min.css" rel="stylesheet" />
+    <script src="../../css/uikit/js/components/notify.js"></script>
+    <link href="../../css/uikit/css/components/notify.almost-flat.css" rel="stylesheet" />
+    <script src="../utils.js"></script>
+    <link href="index.css" rel="stylesheet"/>
+    <style type="text/css">
+        .uk-margin img {
+            border: 3px solid green;
+        }
+    </style>
+</head>
+<body>
+    <div class="tm-middle">
+        <div class="uk-container uk-container-center">
+            <div class="uk-grid" data-uk-grid-margin="">
+                <div class="tm-sidebar uk-width-medium-1-4 uk-hidden-small">
+                    <ul data-uk-nav="" class="uk-nav uk-nav-side">
+                        <li class="uk-nav-header">目录</li>
+                        <li><a href="#a1">如何在图片上画超链接热点</a></li>
+                        <li><a href="#a2">如何在图片上设定倒计时</a></li>
+                        <li><a href="#a3">如何定时切换图片</a></li>
+                        <li><a href="#a4">超链接"售罄"图标提示</a></li>
+                        <li><a href="#log">更新日志</a></li>
+                    </ul>
+                </div>
+                <div class="tm-main uk-width-medium-3-4">
+                    <article class="uk-article">
+                        <h1 class="uk-article-title">ccweditor</h1>
+                        <p>ve.cn活动专场图片编辑器</p>
+                        <p class="uk-article-lead">
+                            一个基于<a href="http://www.tinymce.com/" target="_blank">Tinymce</a>上扩展的编辑器.它主要有以下特点
+                        </p>
+                        <ol>
+                            <li>自定义复杂热点</li>
+                            <li>定时切换图片</li>
+                            <li>定义样式</li>
+                        </ol>
+                        <h2>最新更新</h2>
+                        <h3>ccweditor 1.2.16 2015-2-13</h3>
+                        <ol>
+                            <li>修正了当编辑图片页面其余空白区不能保存</li>
+                            <li>优化模块结构</li>
+                        </ol>
+                        <hr class="uk-article-divider">
+                        <h2 id="a1">如何在图片上画超链接热点</h2>
+                        <div data-uk-margin="" class="uk-margin">
+                            <img height="200" width="600" alt="" src="iamges/1.jpg">
+                            <img height="200" width="600" alt="" src="iamges/2.jpg">
+                            <img  alt="" src="iamges/3.jpg">
+                        </div>
+                        <h2 id="a2">在图片上设定倒计时</h2>
+                        <div data-uk-margin="" class="uk-margin">
+                            <div class="uk-thumbnail uk-thumbnail-large">
+                                <img height="200" width="600" alt="" src="iamges/4.jpg">
+                            </div>
+                            <img alt="" src="iamges/5.jpg">
+                        </div>
+                        <h2 id="a3">如何定时切换图片</h2>
+                        <div data-uk-margin="" class="uk-margin">
+                            <img alt="" src="iamges/6.jpg">
+                            <img alt="" src="iamges/7.jpg">
+                        </div>
+                        <h2 id="a4">超链接"售罄"图标提示</h2>
+                        <div data-uk-margin="" class="uk-margin">
+                            <img alt="" src="iamges/8.jpg">
+                            <img alt="" src="iamges/9.jpg">
+                        </div>
+                        <h2 id="log">更新日志</h2>
+                        <h3>ccweditor 1.2.16 2015-2-13</h3>
+                        <ol>
+                            <li>修正了当编辑图片页面其余空白区不能保存</li>
+                            <li>优化模块结构</li>
+                        </ol>
+                        <h3>ccweditor 1.2.15 2015-2-12</h3>
+                        <ol>
+                            <li>支持之前编辑器所生成的map,area元素包括(倒计时,链接,锚点,按钮)转换为a元素,并且完全移除map,area元素</li>
+                        </ol>
+                        <h3>ccweditor 1.2.14 2015-2-11</h3>
+                        <ol>
+                            <li>重要修正:兼容旧编辑器的链接及锚点,当旧编辑器的内容载入时,自动转换为新编辑器的内容格式</li>
+                            <li>修正了加载编辑器时给锚点加边框</li>
+                            <li>新增预览及编辑图片时的loading动画提示</li>
+                        </ol> 
+                        <h3>ccweditor 1.1.12 2015-2-9</h3>
+                        <ol>
+                            <li>新增"售罄"图标提示,当:热点为一个正确链接,将分析该地址,是否存在库存,存在则显示"售罄"图标</li>
+                            <li>重要修正:生成的热点不在是map元素替换之a元素,除了倒计时类型会生成div,其余均为a</li>
+                            <li>重要修正:在编辑器内,对热点元素只能回车/退格/Delete键,并回车会生成前后一个p,确保编辑的正确性</li>
+                            <li>模块化部分代码,优化</li>
+                            <li>优化热点所生成的代码,更简洁</li>
+                            <li>当链接类型为链接并且没修改过,默认值是http://,并校验该地址</li>
+                        </ol> 
+                        <h3>ccweditor 1.0.11 2015-2-7</h3>
+                        <ol>
+                            <li>修正了当图片很小的时候没有出现滚动条</li>
+                        </ol> 
+                        <h3>ccweditor 1.0.10 2015-2-6 修正很重要!很严重的问题!</h3>
+                        <ol>
+                            <li>修正了对内容按退格键(删除)时,没有删除热点(蓝色框)</li>
+                            <li>修正了插入锚点没有删除热点(蓝色框)</li>
+                            <li>修正了插入图片/多图上传对当前激活编辑器的正确性</li>
+                            <li>修正了在编辑器内对图片各种操作,可能会产生不正确的位置及内容</li>
+                            <li>修正了(编辑图片页面)不会自适应宽高</li>
+                            <li>优化了编辑器内容所产生的代码</li>
+                            <li>关闭了编辑器内容可拖动热点,及改变图片大小</li>
+                            <li>增加了这个当前文档在编辑器的工具栏上</li>
+                        </ol>
+                        <h3>ccweditor 1.0 2015-2-6 更早之前</h3>
+                        <ol>
+                            <li>第一个版本</li>
+                        </ol>     
+                    </article>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,23 @@
+﻿.tm-article-subtitle {
+    border-left: 3px solid #1fa2d6;
+    font-size: 16px;
+    line-height: 16px;
+    padding-left: 6px;
+}
+
+body, h1, h2, h3, h4, h5, h6, .uk-navbar-nav > li > a {
+    font-family: "NotoSans CJK", "微软雅黑", "Proxima Nova", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.tm-middle {
+    background: none repeat scroll 0 0 #fff;
+}
+
+.tm-middle, .tm-section, .tm-footer {
+    padding: 20px 120px 120px 120px;
+}
+
+
+/*.cropwrap a {
+    display: none;
+}*/
