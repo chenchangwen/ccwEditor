@@ -1,4 +1,4 @@
-//start by ccw
+﻿//start by ccw
 var goodIdAry = [],
     showGoodIdAry = [];
 $(document).ready(function () {
@@ -7,6 +7,7 @@ $(document).ready(function () {
     $('a[target="youhui"],.youhui').on('click', function () {
         var data = $(this).data('id') || '';
         data = data.toString().split(',');
+
         //最大对象参数长度
         var maxlen = 3;
         //请求接口的对象
@@ -101,7 +102,7 @@ $(document).ready(function () {
             }
         }
         //显示a标签,兼容map
-        if ($this[0].tagName === 'A' || $this.attr('linktype') ==='countdown') {
+        if ($this[0].tagName === 'A' || $this.attr('linktype') === 'countdown') {
             var style = $this.attr('style') + 'display:block!important';
             $this.css('cssText', style);
         } else {
@@ -113,7 +114,7 @@ $(document).ready(function () {
             str = str.toString();
             str = str.match(/goods-\d+/);
             if (str != null) {
-                str = str.toString().match(/\d+/)
+                str = str.toString().match(/\d+/);
                 if (str != null) {
                     goodIdAry.push(str);
                 }
@@ -313,10 +314,12 @@ function requestData(option, callback) {
 
 //显示商品图片提示
 function showGoodPicTip() {
+    if (goodIdAry.length == 0)
+        return false;
     var query = {
         url: '/index.php?ctl=brandcate&act=get_brandcate_deal_stock',
         data: {
-            deal_ids: goodIdAry.toString() || ''
+            deal_ids: goodIdAry.toString()
         }
     };
     //请求是否显示图片id的商品
@@ -328,8 +331,9 @@ function showGoodPicTip() {
                     var dealmount = msg.data.deal_amount;
                     for (var i = 0, len = msg.data.deal_amount.length; i < len; i++) {
                         //如果数量大于1则存储
-                        if (dealmount[i].amount > 0) {
-                            showGoodIdAry.push(dealmount[i].id);
+                        if (dealmount[i].amount <= 0) {
+                            if (dealmount[i].id != '')
+                                showGoodIdAry.push(dealmount[i].id);
                         }
                     };
                     //遍历需要显示的id数组

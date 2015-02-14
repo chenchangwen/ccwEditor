@@ -1,0 +1,56 @@
+<p>无标题文档
+    <img src="http://img.ve.cn/public/attachment/201502/11/03/20150211031453771.jpg" usemap="#Map" width="1100" border="0" height="1567" />
+    <map name="Map" id="Map">
+        <area href="http://www.ve.cn/wjxx/al/goods-25685.html" shape="rect" coords="9,6,294,545" target="_blank" />
+
+ 
+    </map> 
+    <img src="http://img.ve.cn/public/attachment/201502/11/03/20150211031924932.jpg" usemap="#Map2" width="1100" border="0" height="1429" />
+    <map name="Map2" id="Map2">
+        <area href="http://www.ve.cn/wjxx/al/goods-25683.html" shape="rect" coords="6,4,486,448" target="_blank" />
+
+        <area href="http://www.ve.cn/wjxx/blwj/goods-22252.html" shape="rect" coords="489,6,1097,447" target="_blank" />
+
+        <area href="http://www.ve.cn/wjxx/toyroyal/goods-23870.html" shape="rect" coords="8,457,340,867" target="_blank" />
+
+        <area href="/\http:/www.ve.cn/wjxx/other/goods-37890.html" shape="rect" coords="348,453,738,867" target="_blank" />
+
+        <area href="http://www.ve.cn/wjxx/other/goods-37890.html" shape="rect" coords="735,456,1092,863" target="_blank" />
+
+        <area href="http://www.ve.cn/wjxx/other/goods-38115.html" shape="rect" coords="6,874,535,1421" target="_blank" />
+
+        <area href="http://www.ve.cn/wjxx/al/goods-25679.html" shape="rect" coords="542,875,1097,1423" target="_blank" />
+    </map> 
+    <img src="http://img.ve.cn/public/attachment/201502/11/03/20150211035506699.jpg" usemap="#Map3" width="1100" border="0" height="1652" />
+    <map name="Map3" id="Map3">
+        <area href="http://www.ve.cn/wjxx/toyroyal/goods-23878.html" shape="rect" coords="5,7,513,478" target="_blank" />
+
+        <area href="http://www.ve.cn/wjxx/al/goods-25701.html" shape="rect" coords="522,7,1092,481" target="_blank" />
+
+        <area href="http://www.ve.cn/wjxx/other/goods-38146.html" shape="rect" coords="4,487,564,1068" target="_blank" />
+
+        <area href="http://www.ve.cn/wjxx/kb/goods-26167.html" shape="rect" coords="567,485,1090,1067" target="_blank" />
+
+        <area href="http://www.ve.cn/wjxx/kb/goods-26164.html" shape="rect" coords="4,1075,387,1642" target="_blank" />
+
+        <area href="http://www.ve.cn/wjxx/kb/goods-26162.html" shape="rect" coords="392,1070,749,1644" target="_blank" />
+
+        <area href="http://www.ve.cn/wjxx/kb/goods-26165.html" shape="rect" coords="754,1072,1090,1640" target="_blank" />
+    </map>
+</p>
+<p>
+    <canvas style="display: none ! important;" height="640" width="1920" class="firebugResetStyles firebugBlockBackgroundColor firebugCanvas" id="firebugCanvas"></canvas>
+</p>
+
+
+
+
+<a class="imgpos" contenteditable="false" target="_blank" linktype="link" href="http://" style="position:absolute;border:2px solid blue;left:0px;top:0px;width:94px;height:94px;">
+<b style="left:2px;top:2px;"></b>
+</a>
+
+
+<img src="http://img.ve.cn/public/attachment/201502/11/03/20150211031453771.jpg" usemap="#Map" width="1100" border="0" height="1567" />
+<map name="Map" id="Map">
+    <area href="http://www.ve.cn/wjxx/al/goods-25685.html" shape="rect" coords="9,6,294,545" target="_blank" />
+</map> 

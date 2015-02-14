@@ -2044,39 +2044,39 @@ i.mce-i-backcolor {
 }
 /*重写,自定义样式*/
 .mce-i-link {
-   background-image: url(../../../../../../../ccweditor/images/link.png);
+   background-image: url(images/link.png);
 }
 .mce-i-code {
-   background-image: url(../../../../../../../ccweditor/images/sourcecode.png);
+   background-image: url(images/sourcecode.png);
 }
 .mce-i-undo {
-  background-image: url(../../../../../../../ccweditor/images/undo.png);
+  background-image: url(images/undo.png);
 }
 
 .mce-i-redo {
-  background-image: url(../../../../../../../ccweditor/images/redo.png);
+  background-image: url(images/redo.png);
 }
 
 .mce-i-btnanchor {
-   background-image: url(../../../../../../../ccweditor/images/anchor.png);
+   background-image: url(images/anchor.png);
 }
 .mce-i-btnfullscreen {
-   background-image: url(../../../../../../../ccweditor/images/fullscreen.png);
+   background-image: url(images/fullscreen.png);
 }
 .mce-i-btndocument {
-   background-image: url(../../../../../../../ccweditor/images/document.png);
+   background-image: url(images/document.png);
 }
 .mce-i-btninsertimage {
-   background-image: url(../../../../../../../ccweditor/images/insertimage.png);
+   background-image: url(images/insertimage.png);
 }
 .mce-i-btnpreview {
-   background-image: url(../../../../../../../ccweditor/images/preview.png);
+   background-image: url(images/preview.png);
 }
 
 .mce-i-btnmupload {
-   background-image: url(../../../../../../../ccweditor/images/mupload.png);
+   background-image: url(images/mupload.png);
 }
 
 .mce-i-newdocument {
-   background-image: url(../../../../../../../ccweditor/images/newdocument.png);
+   background-image: url(images/newdocument.png);
 }
