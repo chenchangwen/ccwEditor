@@ -395,8 +395,8 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                 }
 
                 //测试用
-                // editor.setContent('');
-                // editor.insertContent('<div class="bbbb"><div class="aaaa"><img usemap="mymap" src="http://localhost:2735/ccweditor/images/test.jpg?123" /><map name="mymap"><AREA SHAPE=\"rect\"COORDS=\"0,0,82,126\"href=\"#\"></map></div>');
+                 editor.setContent('');
+                 editor.insertContent('<div class="bbbb"><div class="aaaa"><img usemap="mymap" src="http://localhost:1617/images/test.jpg?123" /><map name="mymap"><AREA SHAPE=\"rect\"COORDS=\"0,0,82,126\"href=\"#\"></map></div>');
 
                 var selectel, el;
                 //清除br
