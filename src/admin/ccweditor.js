@@ -54,7 +54,6 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
     var $jq = $.noConflict(true);
     var cropwrap = "cropwrap",
         imgpos = "imgpos",
-
         mcequery = tinymce.dom.DomQuery,
 
         zhMsg1 = '请选择正确的区域',
@@ -77,6 +76,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
         display = 'display',
         inline = 'inline',
         linketype = 'linketype',
+        link = 'link',
         target = 'target',
         href = 'href',
         iframe = 'iframe',
@@ -88,7 +88,11 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
         a = 'a',
         br = 'br',
         usemap = 'usemap',
-        temparea = [];
+        contenteditable = 'contenteditable',
+
+        borderstyle = "2px solid blue";
+
+        
         
 
     var ccweditor = {
@@ -184,7 +188,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
         //修正就算没有焦点,也能正确全屏对应的编辑器
         //原因:如果有多个编辑器对象,因为还没有在编辑器内存在焦点,全屏会认为最后一个初始化的为激活对象.
         fullscreen: function (editor) {
-            ccweditor.fixEditorIndex(editor);
+            this.fixEditorIndex(editor);
             tinymce.editors[tinymce.activeEditor.fsindex].execCommand("mceFullScreen");
         },
         fixEditorIndex: function (editor) {
@@ -206,23 +210,23 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             var content = "", str;
             for (var key in attribute) {
                 var value = attribute[key];
-                if (key !== "contenteditable") {
-                    if (typeof toelement == "string") {
-                        
+                if (key !== contenteditable) {
+                    if (typeof toelement == "string" ) {
                         content += key + "=\"" + value + "\"";
                     } else {
                         toelement.attr(key, value);
                     }
                 }
             }
-            if (toelement === "a") {
+            if (toelement === a) {
                 content = content.replace(/linktarget/g, target).replace(/新建窗口/g, "_blank").replace(/当前窗口/g, "_self").replace(/link=/g, "href=");
                 str = "<rename " + content + ">" + "<rename>";
                 str = str.replace(/rename/ig, toelement);
                 fromelement.wrap(str);
                 //锚点不加图片提示
                 var parent = fromelement.parent();
-                //是否有coords
+                parent.addClass(imgpos);
+                //是否有coords(即是area)
                 var pcoords = parent.attr('coords');
                 if (pcoords != undefined) {
                     var tcoords = pcoords.split(',');
@@ -232,12 +236,16 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                         w: tcoords[2], //width
                         h: tcoords[3]  //heigth
                     };
-                    var style = 'position:absolute;left:' + coords.x + 'px;top:' + coords.y + 'px;width:' + (coords.w - coords.x) + 'px;';
+                    var style = 'position:absolute;left:' + coords.x + 'px;top:' + coords.y + 'px;width:' + (coords.w - coords.x) + 'px;height:'+coords.h+'px;';
+                    //给area增加style,以便定位
+                    fromelement.attr('style', style);
                     parent.attr('style', style).removeAttr('coords').removeAttr('shape');
                 }
                 if (fromelement.attr(linketype) !== anchor) {
                     parent.append(this.template.b(fromelement));
+                    parent.attr(linketype, link);
                 } else {
+                    parent.attr(linketype, anchor);
                     //并且删除该属性
                     parent.attr(href, "#" + parent.attr(target)).removeAttr(target).removeAttr("cdsuffix");
                 }
@@ -252,20 +260,24 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                 var id = $jqel.attr(usemap).replace(/#/g, '');
                 $jqmap = tinymce.activeEditor.dom.select("#" + id);
                 $jqchildren = mcequery($jqmap).children('area');
-
-                //如果有area必须加cropwrap
-//                if ($jqchildren.length > 0) {
-//                    $jqel.wrap(ccweditor.template.cropwrap());
-//                }
-
-                $jqchildren.each(function () {
-                    //将area转换成a
-                    var $jqthis = $jq(this);
-                    ccweditor.setAttributes($jqthis, a);
-                    //$jqthis.remove();
-                });
+                //如果有area
+                if ($jqchildren.length > 0) {
+                    //将图片移进map
+                    mcequery($jqmap).append($jqel);
+                    mcequery($jqmap).wrap(ccweditor.template.cropwrap());
+                    $jqchildren.unwrap();
+                    $jqchildren.each(function() {
+                        var $jqthis = $jq(this);
+                        //将area转换成a
+                        ccweditor.setAttributes($jqthis, a);
+                        //删除area
+                        $jqthis.remove();
+                    });
+                } else {
+                    $jqel.wrap(ccweditor.template.cropwrap());
+                }
                 //不让图片隐藏
-                $jqel.css(display, '').css(display, 'block');
+                $jqel.css(display, '').css(display, 'block').removeAttr(usemap);
             }
             //div.cropwrap
             else if ($jqel.hasClass(cropwrap)) {
@@ -282,7 +294,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                 $jqimgpos.each(function () {
                     var $jqthis = $jq(this);
                     $jqthis.attr(target, $jqthis.attr("linktarget"));
-                    if ($jqthis[0].tagName !== "MAP" && $jqthis.attr(linketype) !== "link" && $jqthis.attr(linketype) !== anchor) {
+                    if ($jqthis[0].tagName !== "MAP" && $jqthis.attr(linketype) !== link && $jqthis.attr(linketype) !== anchor) {
                         return false;
                     } else {
                         ccweditor.setAttributes($jq(this), a);
@@ -290,7 +302,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     }
                 });
             }
-                //a
+            //a
             else if ($jqel[0].tagName === "A") {
                 var data = $jqel.attr("data");
                 if (data != undefined) {
@@ -305,7 +317,6 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                             }
                             $jqel.attr(linketype, "link");
                         }
-
                         if (data[2] !== "") {
                             $jqel.attr(target, data[2]);
                         }
@@ -328,29 +339,22 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                         var centertop = (utils.accDiv(data[6], 2) - 45) || 0;
                         var tipchildstyle = "left:" + centerleft + "px;top:" + centertop + "px;";
                         var html = "<b style=\"" + tipchildstyle + "\"></b>";
-                        $jqel.removeAttr("data");
-                        $jqel.append(html);
+                        $jqel.removeAttr("data").append(html);
                     }
-                    $jqel.removeAttr("class");
-                    $jqel.addClass(imgpos);
-                    $jqel.css("position", "absolute");
+                    $jqel.removeAttr("class").addClass(imgpos).css("position", "absolute");
                     $jqparent = $jqel.parent(div);
-                    $jqparent.removeAttr("id");
-                    $jqparent.removeAttr("class");
-                    $jqparent.addClass(cropwrap);
-                    $jqparent.children(img).removeAttr("id");
+                    $jqparent.removeAttr("id").removeAttr("class").addClass(cropwrap).children(img).removeAttr("id");
+
                 }
                 var name = $jqel.attr("name");
                 if (name != undefined) {
                     $jqparent = $jqel.parent();
                     if ($jqparent[0].tagName === "P") {
-                        $jqparent.css(display,inline);
-                        $jqparent.attr("data-mce-style",inline);
+                        $jqparent.css(display, inline).attr("data-mce-style", inline);
                     } else {
                         $jqel.wrap(ccweditor.template.p());
                     }
-                    $jqel.attr("id", name);
-                    $jqel.addClass("tempanchor");
+                    $jqel.attr("id", name).addClass("tempanchor");
                 }
             }
         },
@@ -358,10 +362,12 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
         clean: function (el) {
             for (var i = 0, len = el.length; i < len; i++) {
                 var $jqel = $jq(el[i]);
-                $jqel.css("border", "0").removeAttr("contenteditable");
                 var style = $jqel.attr("style");
-                $jqel.attr("data-mce-style", style);
+                $jqel.css("border", "0").removeAttr(contenteditable).attr("data-mce-style", style);
             }
+        },
+        wrapp: function() {
+
         }
     }
 
@@ -388,15 +394,10 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
 
             editor.on("init", function () {
                 var classcropwrap = '.cropwrap';
-                var $img = editor.dom.select(classcropwrap);
                 var i;
-                for (i = 0; i < $img.length; i++) {
-                    $jq($img[i]).wrap(tplp);
-                }
-
                 //测试用
-                 editor.setContent('');
-                 editor.insertContent('<div class="bbbb"><div class="aaaa"><img usemap="mymap" src="http://localhost:1617/images/test.jpg?123" /><map name="mymap"><AREA SHAPE=\"rect\"COORDS=\"0,0,82,126\"href=\"#\"></map></div>');
+//                 editor.setContent('');
+//                 editor.insertContent('<div class="bbbb"><div class="aaaa"><img usemap="mymap" src="http://localhost:1617/images/test.jpg?123" /><map name="mymap"><AREA SHAPE=\"rect\"COORDS=\"0,0,82,126\"href=\"#\"></map></div>');
 
                 var selectel, el;
                 //清除br
@@ -405,14 +406,14 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     el = selectel[i];
                     tinymce.activeEditor.dom.remove(el);
                 }
-                //将map转换为a
+                //将.cropwrap有map的转换为a(早些版本是map为主)
                 selectel = editor.dom.select(classcropwrap);
                 for (i = 0; i < selectel.length; i++) {
                     el = selectel[i];
                     ccweditor.convert(el);
                 }
 
-                //将img转换为a
+                //将img关联的map转换为a
                 selectel = editor.dom.select(img);
                 for (i = 0; i < selectel.length; i++) {
                     el = selectel[i];
@@ -425,17 +426,17 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     el = selectel[i];
                     ccweditor.convert(el);
                     var querya = mcequery(el);
-                    var parent = querya.parent();
+//                    var parent = querya.parent();
                     //如果不是锚点,并且子元素没有img
                     if (!editor.dom.hasClass(el, "tempanchor") && querya.children(img).length <= 0)
-                        editor.dom.setStyle(el, "border", "2px solid blue");
-                    editor.dom.setAttrib(el, "contenteditable", "false");
-                    //如果父元素是p
-                    if (parent[0].tagName === "P") {
-                        parent.css(display, inline).attr("data-mce-style", inline);
-                    } else {
-                        querya.wrap(tplp);
-                    }
+                        editor.dom.setStyle(el, "border", borderstyle);
+                    editor.dom.setAttrib(el, contenteditable, "false");
+//                    //如果父元素是p
+//                    if (parent[0].tagName === "P") {
+//                        parent.css(display, inline).attr("data-mce-style", inline);
+//                    } else if(!parent.hasClass(cropwrap)){
+//                        querya.wrap(tplp);
+//                    }
                 }
 
                 tinymce.activeEditor.transitionPic = [];
@@ -653,8 +654,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             //提交前清理
             for (var j = 0; j < tinyMCE.editors.length; j++) {
                 var editortemp = tinyMCE.editors[j];
-                var imgpos = editortemp.dom.select(".imgpos");
-                ccweditor.clean(imgpos);
+                ccweditor.clean(editortemp.dom.select(".imgpos"));
             }
         });
     });
