@@ -55,7 +55,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
     var cropwrap = "cropwrap",
         imgpos = "imgpos",
         mcequery = tinymce.dom.DomQuery,
-
+        len =0,
         zhMsg1 = '请选择正确的区域',
 
         zhTitle1 = '插入/更换图片',
@@ -75,7 +75,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
 
         display = 'display',
         inline = 'inline',
-        linketype = 'linketype',
+        linktype = 'linktype',
         link = 'link',
         target = 'target',
         href = 'href',
@@ -241,40 +241,92 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     fromelement.attr('style', style);
                     parent.attr('style', style).removeAttr('coords').removeAttr('shape');
                 }
-                if (fromelement.attr(linketype) !== anchor) {
+                if (fromelement.attr(linktype) !== anchor) {
                     parent.append(this.template.b(fromelement));
-                    parent.attr(linketype, link);
+                    parent.attr(linktype, link);
                 } else {
-                    parent.attr(linketype, anchor);
+                    parent.attr(linktype, anchor);
                     //并且删除该属性
                     parent.attr(href, "#" + parent.attr(target)).removeAttr(target).removeAttr("cdsuffix");
                 }
             }
         },
-        //转换旧编辑器内容
+        //格式化编辑器
+        format: function() {
+            var classcropwrap = '.cropwrap';
+            var i;
+            var convertbatch = function (selector, callback) {
+                var el;
+                for (i = 0, len = selector.length; i < len; i++) {
+                    el = selector[i];
+                    if (typeof callback === "function") {
+                        callback(el);
+                    }
+                }
+            }
+            var editor = tinymce.activeEditor; 
+
+            //清除br
+            convertbatch(editor.dom.select(br), function(el) {
+                editor.dom.remove(el);
+            });
+
+            //将.cropwrap有map的转换为a(早些版本是map为主)
+            convertbatch(editor.dom.select(classcropwrap), function(el) {
+                ccweditor.convert(el);
+            });
+
+            //将img关联的map转换为a
+            convertbatch(editor.dom.select(img), function(el) {
+                ccweditor.convert(el);
+            });
+
+            //还原border,及超链接,及锚点
+            convertbatch(editor.dom.select(a), function (el) {
+                var querya = mcequery(el);
+                if (!editor.dom.hasClass(el, "tempanchor") && querya.children(img).length <= 0)
+                    editor.dom.setStyle(el, "border", borderstyle);
+                editor.dom.setAttrib(el, contenteditable, "false");
+            });
+            //修正图片在div.cropwrap的位置
+            convertbatch(editor.dom.select(img), function (el) {
+                if (mcequery(el).parent().hasClass(cropwrap)) {
+                    //将图片移到第一个位置
+                    mcequery(el).parent().prepend(el);
+                }
+            });
+ 
+        },
+        //转换编辑器元素
         convert: function (el) {
             var $jqel = $jq(el);
             var $jqparent, $jqmap, $jqchildren;
             //img
             if ($jqel[0].tagName === "IMG") {
-                var id = $jqel.attr(usemap).replace(/#/g, '');
-                $jqmap = tinymce.activeEditor.dom.select("#" + id);
-                $jqchildren = mcequery($jqmap).children('area');
-                //如果有area
-                if ($jqchildren.length > 0) {
-                    //将图片移进map
-                    mcequery($jqmap).append($jqel);
-                    mcequery($jqmap).wrap(ccweditor.template.cropwrap());
-                    $jqchildren.unwrap();
-                    $jqchildren.each(function() {
-                        var $jqthis = $jq(this);
-                        //将area转换成a
-                        ccweditor.setAttributes($jqthis, a);
-                        //删除area
-                        $jqthis.remove();
-                    });
-                } else {
-                    $jqel.wrap(ccweditor.template.cropwrap());
+                var mark = ($jqel.attr(usemap) || '').replace(/#/g, '');
+                if (mark !== '') {
+                    $jqmap = tinymce.activeEditor.dom.select("#" + mark);
+                    if ($jqmap.length === 0) {
+                        //尝试取得name
+                        $jqmap=tinymce.activeEditor.dom.select('map[name="' + mark + '"]');
+                    }
+                    $jqchildren = mcequery($jqmap).children('area');
+                    //如果有area
+                    if ($jqchildren.length > 0) {
+                        //将图片移进map
+                        mcequery($jqmap).append($jqel);
+                        mcequery($jqmap).wrap(ccweditor.template.cropwrap());
+                        $jqchildren.unwrap();
+                        $jqchildren.each(function() {
+                            var $jqthis = $jq(this);
+                            //将area转换成a
+                            ccweditor.setAttributes($jqthis, a);
+                            //删除area
+                            $jqthis.remove();
+                        });
+                    } else {
+                        $jqel.wrap(ccweditor.template.cropwrap());
+                    }
                 }
                 //不让图片隐藏
                 $jqel.css(display, '').css(display, 'block').removeAttr(usemap);
@@ -294,7 +346,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                 $jqimgpos.each(function () {
                     var $jqthis = $jq(this);
                     $jqthis.attr(target, $jqthis.attr("linktarget"));
-                    if ($jqthis[0].tagName !== "MAP" && $jqthis.attr(linketype) !== link && $jqthis.attr(linketype) !== anchor) {
+                    if ($jqthis[0].tagName !== "MAP" && $jqthis.attr(linktype) !== link && $jqthis.attr(linktype) !== anchor) {
                         return false;
                     } else {
                         ccweditor.setAttributes($jq(this), a);
@@ -310,12 +362,12 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     //最多6个属性(超链接)
                     if (data[0] == 1) {
                         if ($jqel.attr(href).indexOf("#") >= 0) {
-                            $jqel.attr(linketype, anchor);
+                            $jqel.attr(linktype, anchor);
                         } else {
                             if (data[1] !== "") {
                                 $jqel.attr(href, data[1]);
                             }
-                            $jqel.attr(linketype, "link");
+                            $jqel.attr(linktype, "link");
                         }
                         if (data[2] !== "") {
                             $jqel.attr(target, data[2]);
@@ -358,16 +410,13 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                 }
             }
         },
-        //清理格式
+        //清理
         clean: function (el) {
             for (var i = 0, len = el.length; i < len; i++) {
                 var $jqel = $jq(el[i]);
                 var style = $jqel.attr("style");
                 $jqel.css("border", "0").removeAttr(contenteditable).attr("data-mce-style", style);
             }
-        },
-        wrapp: function() {
-
         }
     }
 
@@ -390,55 +439,11 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
         relative_urls: false,
         valid_elements: "*[*]",
         setup: function (editor) {
-            var tplp = ccweditor.template.p();
-
             editor.on("init", function () {
-                var classcropwrap = '.cropwrap';
-                var i;
+                ccweditor.format();
                 //测试用
-//                 editor.setContent('');
-//                 editor.insertContent('<div class="bbbb"><div class="aaaa"><img usemap="mymap" src="http://localhost:1617/images/test.jpg?123" /><map name="mymap"><AREA SHAPE=\"rect\"COORDS=\"0,0,82,126\"href=\"#\"></map></div>');
-
-                var selectel, el;
-                //清除br
-                selectel = editor.dom.select(br);
-                for (i = 0; i < selectel.length; i++) {
-                    el = selectel[i];
-                    tinymce.activeEditor.dom.remove(el);
-                }
-                //将.cropwrap有map的转换为a(早些版本是map为主)
-                selectel = editor.dom.select(classcropwrap);
-                for (i = 0; i < selectel.length; i++) {
-                    el = selectel[i];
-                    ccweditor.convert(el);
-                }
-
-                //将img关联的map转换为a
-                selectel = editor.dom.select(img);
-                for (i = 0; i < selectel.length; i++) {
-                    el = selectel[i];
-                    ccweditor.convert(el);
-                }
-
-                //还原border,及超链接,及锚点
-                selectel = editor.dom.select(a);
-                for (i = 0; i < selectel.length; i++) {
-                    el = selectel[i];
-                    ccweditor.convert(el);
-                    var querya = mcequery(el);
-//                    var parent = querya.parent();
-                    //如果不是锚点,并且子元素没有img
-                    if (!editor.dom.hasClass(el, "tempanchor") && querya.children(img).length <= 0)
-                        editor.dom.setStyle(el, "border", borderstyle);
-                    editor.dom.setAttrib(el, contenteditable, "false");
-//                    //如果父元素是p
-//                    if (parent[0].tagName === "P") {
-//                        parent.css(display, inline).attr("data-mce-style", inline);
-//                    } else if(!parent.hasClass(cropwrap)){
-//                        querya.wrap(tplp);
-//                    }
-                }
-
+                //editor.setContent('');
+                // editor.insertContent('<div class="bbbb"><div class="aaaa"><img usemap="mymap" src="http://localhost:1617/images/test.jpg?123" /><map name="mymap"><AREA SHAPE=\"rect\"COORDS=\"0,0,82,126\"href=\"#\"></map></div>');
                 tinymce.activeEditor.transitionPic = [];
             });
 
