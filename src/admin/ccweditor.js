@@ -55,7 +55,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
     var cropwrap = "cropwrap",
         imgpos = "imgpos",
         mcequery = tinymce.dom.DomQuery,
-        len =0,
+        len = 0,
         zhMsg1 = '请选择正确的区域',
 
         zhTitle1 = '插入/更换图片',
@@ -89,6 +89,10 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
         br = 'br',
         usemap = 'usemap',
         contenteditable = 'contenteditable',
+
+        classcropwrap = '.cropwrap',
+        classusemap = '.usemap',
+        classimgpos = '.imgpos',
 
         borderstyle = "2px solid blue";
 
@@ -253,7 +257,6 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
         },
         //格式化编辑器
         format: function() {
-            var classcropwrap = '.cropwrap';
             var i;
             var convertbatch = function (selector, callback) {
                 var el;
@@ -264,11 +267,15 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     }
                 }
             }
-            var editor = tinymce.activeEditor; 
-
+            var editor = tinymce.activeEditor;
             //清除br
             convertbatch(editor.dom.select(br), function(el) {
                 editor.dom.remove(el);
+            });
+
+            //usemap
+            convertbatch(editor.dom.select(classusemap), function (el) {
+                ccweditor.convert(el);
             });
 
             //将.cropwrap有map的转换为a(早些版本是map为主)
@@ -283,6 +290,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
 
             //还原border,及超链接,及锚点
             convertbatch(editor.dom.select(a), function (el) {
+                ccweditor.convert(el);
                 var querya = mcequery(el);
                 if (!editor.dom.hasClass(el, "tempanchor") && querya.children(img).length <= 0)
                     editor.dom.setStyle(el, "border", borderstyle);
@@ -295,14 +303,37 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     mcequery(el).parent().prepend(el);
                 }
             });
- 
+
+            //给cropwrap 加p
+            convertbatch(editor.dom.select(classcropwrap), function (el) {
+
+                if (mcequery(el).parent()[0].tagName !== 'P') {
+                    mcequery(el).wrap(ccweditor.template.p());
+                } else {
+                    //不让P包住多个cropwrap
+                    // mcequery(el).parent().unwrap();
+                    editor.execCommand("mceRemoveNode", false, mcequery(el).parent());
+                    mcequery(el).wrap(ccweditor.template.p());
+                }
+            });
+
         },
         //转换编辑器元素
         convert: function (el) {
             var $jqel = $jq(el);
             var $jqparent, $jqmap, $jqchildren;
+            //div.usemap
+            if ($jqel.hasClass(usemap)) {
+                $jqel.find(classimgpos).remove();
+                $jqparent = $jqel.parent();
+                if ($jqparent.hasClass(cropwrap)) {
+                    $jqel.unwrap();
+                } else {
+                    $jqel.removeClass(usemap).addClass(cropwrap).removeAttr('id');
+                }
+            }
             //img
-            if ($jqel[0].tagName === "IMG") {
+            else if ($jqel[0].tagName === "IMG") {
                 var mark = ($jqel.attr(usemap) || '').replace(/#/g, '');
                 if (mark !== '') {
                     $jqmap = tinymce.activeEditor.dom.select("#" + mark);
@@ -329,13 +360,13 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     }
                 }
                 //不让图片隐藏
-                $jqel.css(display, '').css(display, 'block').removeAttr(usemap);
+                $jqel.css(display, '').css(display, 'block').removeAttr(usemap).removeAttr('id');
             }
             //div.cropwrap
             else if ($jqel.hasClass(cropwrap)) {
                 var $jqimg = $jqel.children(img);
                 $jqmap = $jqel.children("map");
-                var $jqimgpos = $jqel.children(".imgpos");
+                var $jqimgpos = $jqel.children(classimgpos);
                 if ($jqmap.length > 0) {
                     $jqmap.remove();
                     //获得所有map的属性
@@ -393,7 +424,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                         var html = "<b style=\"" + tipchildstyle + "\"></b>";
                         $jqel.removeAttr("data").append(html);
                     }
-                    $jqel.removeAttr("class").addClass(imgpos).css("position", "absolute");
+                    $jqel.removeAttr("class").addClass(imgpos).css("position", "absolute").removeAttr('data');
                     $jqparent = $jqel.parent(div);
                     $jqparent.removeAttr("id").removeAttr("class").addClass(cropwrap).children(img).removeAttr("id");
 
@@ -414,8 +445,9 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
         clean: function (el) {
             for (var i = 0, len = el.length; i < len; i++) {
                 var $jqel = $jq(el[i]);
+                $jqel.css("border", "0").removeAttr(contenteditable);
                 var style = $jqel.attr("style");
-                $jqel.css("border", "0").removeAttr(contenteditable).attr("data-mce-style", style);
+                $jqel.attr("data-mce-style", style);
             }
         }
     }
@@ -525,7 +557,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                         var pnode, isimgpos = false, src;
                         var pic = tinymce.activeEditor.selection.getNode();
                         //是否一个imgpos
-                        if ($jq(pic).hasClass("imgpos")) {
+                        if ($jq(pic).hasClass(imgpos)) {
                             var img = $jq(pic.parentNode).children("img");
                             src = img.attr("data-mce-src") || img.attr("src");
                             isimgpos = true;
@@ -591,7 +623,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                             return false;
                         }
                         if (parents.length >= 1) {
-                            var p = ccweditor.template.b("<br/>");
+                            var p = ccweditor.template.p("<br/>");
                             mcequery(parents).before(p).after(p);
                             return false;
                         }
@@ -659,7 +691,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             //提交前清理
             for (var j = 0; j < tinyMCE.editors.length; j++) {
                 var editortemp = tinyMCE.editors[j];
-                ccweditor.clean(editortemp.dom.select(".imgpos"));
+                ccweditor.clean(editortemp.dom.select(classimgpos));
             }
         });
     });
