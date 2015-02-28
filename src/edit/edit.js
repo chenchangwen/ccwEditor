@@ -24,6 +24,7 @@
                 $trnsrc = $("#trnsrc"),
                 $tblimg = $("#tblimg"),
                 $body = $('body'),
+                $floatbtn = $('#floatbtn'),
                 $img,
                 //图片位置
                 imgpos,
@@ -86,6 +87,7 @@
 
             //初始化
             function init() {
+
                 $img = $("img");
                 var src = $img.attr("src");
                 //处理正确路径
@@ -112,7 +114,8 @@
                 });
 
                 format();
-                bindEvent();
+                sidebar.init();
+                content.init();
                 fixArea(true);
                 renderTransitionPic();
                 tinymce.init({
@@ -179,230 +182,6 @@
 
             }
 
-            //事件绑定
-            function bindEvent() {
-
-                //内容点击保存
-                $content.on("click", function (e) {
-                    //console.log($(this)[0].tagName);
-                    e.stopPropagation();
-                    e.preventDefault();
-                    if ($(e.target).css("cursor") === "move" || $(e.target).css("cursor").indexOf("resize") >= 0) {
-                        return false;
-                    }
-                    if ($editnote != null) {
-                        if ($baritem1.is(":hidden")) {
-                            var re = new RegExp(component.regexp.url, "ig");
-                            if ($linktype.val() == 'link') {
-                                if (!re.test($link.val())) {
-                                    uikitextend.uikit.notify({ message: "请输入正确的链接地址!" });
-                                    return false;
-                                }
-                            }
-                            $("#savehotlink").trigger("click");
-                        } else {
-                            $("#picsave").trigger("click");
-                        }
-                    }
-
-                });
-
-                $(".sizewidth").on("keydown", function (e) {
-                    if (e.keyCode >= 48 && e.keyCode <= 57 || e.keyCode >= 96 && e.keyCode <= 105) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                });
-
-                $("#setting").on("click", function () {
-                    if ($baritem2.css("display") == "block") {
-                        $("#close").trigger("click");
-                    }
-                    $baritem2.hide();
-                    $baritem1.show();
-                    $sidebar.css("transform", "translateX(-10px)");
-                });
-
-                $("#close").on("click", function () {
-                    if (typeof (jcrop_api) != "undefined") {
-                        jcrop_api.release();
-                        jcrop_api.destroy();
-                        delete jcrop_api;
-                        $editnote.css("border", "2px solid blue");
-                        $editnote = null;
-                        isnewselected = false;
-                        sidebar.hide();
-                    }
-                });
-
-                $("#apply").on("click", function () {
-                    var w = parseInt($("#width").val());
-                    var h = parseInt($("#height").val());
-                    var x = parseInt($("#marginleft").val());
-                    var y = parseInt($("#margintop").val());
-                    if (typeof (jcrop_api) != "undefined") {
-                        jcrop_api.animateTo([w + x, h + y, x, y]);
-                        imgpos = {
-                            w: w,
-                            h: h,
-                            x: x,
-                            y: y
-                        };
-                    }
-                });
-
-                $("#addhotlink").on("click", function () {
-                    $("#close").trigger("click");
-                    loadJcrop();
-                    reScroll();
-                    $("#savehotlink").trigger("click");
-                    $(".imgpos:last").trigger("dblclick");
-                });
-
-                $("#savehotlink").on("click", function () {
-                    //保存时
-                    //1.将jcrop对象销毁
-                    //2.jcrop_api全局变量删除
-                    if (typeof (jcrop_api) != "undefined") {
-                        jcrop_api.destroy();
-                        delete jcrop_api;
-                    } else {
-                        return false;
-                    }
-                    format();
-                    //清理
-                    clean();
-                    //添加dom
-                    $cropwrap.append(getImgNote());
-                    //        $cropwrap.append(getLinkArea());
-                    isnewselected = false;
-
-                    //删除Note
-                    deleteNote();
-                    $("img").css("border", "0");
-                    fixArea(true);
-                    isfirstTargetHandle = true;
-                });
-
-                $("#delete").on("click", function () {
-                    deleteNote();
-                    if (typeof (jcrop_api) != "undefined") {
-                        jcrop_api.destroy();
-                        delete jcrop_api;
-                        isnewselected = false;
-                    }
-                });
-
-                $("#save").on("click", function () {
-                    //保存关闭时,执行保存热点
-                    $("#picsave").trigger("click");
-                    $("#savehotlink").trigger("click");
-                    if (typeof (jcrop_api) != "undefined") {
-                        jcrop_api.destroy();
-                        delete jcrop_api;
-                        isnewselected = false;
-                    }
-                    fixArea(false);
-                });
-
-                $("#closesidebar").on("click", function () {
-                    $("#savehotlink").trigger("click");
-                });
-
-                //链接类型点击事件 兼容chrome
-                $linktype.change(function () {
-                    //先删除临时行
-
-                    sidebar.temprow.remove();
-                    var $this = $(this),
-                        linkvalue = linktype[$this.val()],
-                        html = "",
-                        linkval = $this.val();
-                    //如果相等则禁止输入地址
-                    if (linkval == "button" || linkval == "anchor" || linkval == "countdown") {
-                        $("#linkwrap").hide();
-                    } else {
-                        $("#linkwrap").show();
-                    }
-                    //触发函数(针对倒计时子元素超过1)
-                    var triggerFn = "";
-
-                    //如果是锚点(读取并生成锚点)
-                    if (linkval == "anchor") {
-                        //锚点只读第一个编辑器的
-                        var editor1 = parent.tinymce.editors[0];
-                        var $anchor = $(editor1.getBody()).find(".tempanchor");
-                        var len = $anchor.length;
-                        if (len > 0) {
-                            html = getTempRowHtml(function () {
-                                $anchor.each(function () {
-                                    var id = $(this).attr("id");
-                                    html += "<option value=\"" + id + "\">" + id + "</option>";
-                                });
-                                return html;
-                            }, "select");
-                        } else {
-                            html = getTempRowHtml(function () {
-                                return "<div class=\"uk-alert\">没有锚点</div>";
-                            });
-                        }
-                    }
-                        //如果是倒计时
-                    else if (linkval == "countdown") {
-                        html = getTempRowHtml(function () {
-                            for (var i = 0; i < linkvalue.length; i++) {
-                                html += "<option value=\"" + linkvalue[i] + "\">" + linkvalue[i] + "</option>";
-                            }
-                            return html;
-                        }, "select");
-
-                        triggerFn = function () {
-                            if ($(".temprow").length == 1) {
-                                $(".temprow").find("select").children("option").eq(0).prop("selected", "selected").trigger("click");
-                            }
-                        };
-                    } else {
-                        if (linkval === 'link') {
-                            html = component.link;
-                            if ($link.val() === '') {
-                                $link.val('http://');
-                            }
-                        }
-                        else if (linkval === 'button') {
-                            html = component.button;
-                        }
-                    }
-                    $linktarget.html(html);
-                    if (typeof triggerFn == "function") {
-                        triggerFn();
-                    }
-                });
-
-                //链接目标点击事件
-                $linktarget.delegate("span,select:first", "click", function (e) {
-                    targetHandle($(this), e);
-                });
-                //设置时间
-                setDate();
-                //                拖动事件
-                //                var items = document.querySelectorAll('.item');
-                //                var isfirstdrag = true;
-                //                for (var i = 0, len = items.length; i < len; i++) {
-                //                    var item = items[i];
-                //                    var draggie = new Draggabilly(item, {
-                //                        handle: '.handle'
-                //                    });
-                //                    draggie.on('dragMove', function () {
-                //                        if (isfirstdrag) {
-                //                            $("#sidebar").removeAttr('style');
-                //                            isfirstdrag = false;
-                //                        }
-                //                    });
-                //                }
-
-            }
-
             //获得临时行元素html
             function getTempRowHtml(callback, eltype, attr) {
                 var html = "<div class=\"uk-form-row temprow \">";
@@ -430,7 +209,7 @@
                     str = linktype["button"][0],
                     value = "";
                 if (isfirstTargetHandle) {
-                    value = $img.children().eq(getNoteIndex()).data("id");
+                    value = $img.children().eq(sidebar.node.getIndex()).data("id");
                     value = value == undefined ? "" : value;
                 }
                 //如果是第一次目标对象处理并且保存的值,或者重新选择的值等于'领取优惠券' 
@@ -523,6 +302,7 @@
             }
 
             var trnpic = [], trndate = [];
+
             //渲染轮换图片
             function renderTransitionPic() {
                 var html = "";
@@ -592,11 +372,6 @@
                     } else {
                         $img.attr("dayhours", "false");
                     }
-                    $sidebar.css("transform", "translateX(100%)");
-                });
-
-                //图片关闭
-                $("#picclose").on("click", function () {
                     $sidebar.css("transform", "translateX(100%)");
                 });
 
@@ -737,25 +512,6 @@
                 });
             }
 
-            //获得note索引
-            function getNoteIndex() {
-                var $imgpos = $(".imgpos");
-                for (var i = 0; i < $imgpos.length; i++) {
-                    if ($editnote.attr("style") == $imgpos.eq(i).attr("style")) {
-                        return i;
-                    }
-                }
-                return 0;
-            }
-
-            //设置倒计时时间
-            function setDate() {
-                var startdate = $img.attr("startdate");
-                var enddate = $img.attr("enddate");
-                $startdate.val(startdate);
-                $enddate.val(enddate);
-            }
-
             //格式化
             function format() {
                 //img 如果没有被div包住,则让cropwrap包住,并在里面增加map元素
@@ -791,23 +547,6 @@
                 //        setDate();
             }
 
-            //删除Note
-            function deleteNote() {
-                //如果编辑对象不为null,则删除当前编辑的对象
-                if ($editnote != null) {
-                    $editnote.remove();
-                    $editnote = null;
-                    //移除对应map
-                    if ($editmap != null)
-                        $editmap.remove();
-                    if (typeof (jcrop_api) != "undefined") {
-                        jcrop_api.destroy();
-                    }
-                    isnewselected = false;
-                    sidebar.hide();
-                }
-            }
-
             //清理,移除重复
             function clean() {
                 var $imgpos = $(".imgpos");
@@ -823,89 +562,11 @@
                 }
             }
 
-            //获得图片便条
-            function getImgNote() {
-                var width = (imgpos.w - 6);
-                var height = (imgpos.h - 6);
-                var left = imgpos.x;
-                var top = imgpos.y;
-                var linktarget = $linktarget.find("input[type='radio']:checked").val();
-                var linkvalue = $linktarget.find("select:first").find("option:selected").val();
-                var linktype = sidebar.linktype.getValue();
-                var wraptag = linktype === 'countdown' ? 'div' : 'a';
-                var imgposposition = "left:" + left + "px;top:" + top + "px;width:" + width + "px;height:" + (imgpos.h - 6) + "px;";
-                var html =
-                    "<" + wraptag + " contenteditable=\"false\" class=\"imgpos\" style=\"position:absolute;border:2px solid blue;" + imgposposition + "\"";
-
-                if (linktype === 'link') {
-                    html += " href=\"" + $link.val() + "\"";
-                }
-
-                if (linktype === 'anchor') {
-                    html += " href=\"#" + linkvalue + "\"";
-                }
-                if (linktype === "countdown") {
-                    html += "datetype=\"" + $("#countdowntype").val() + "\"";
-                    if ($(".cycledate").val() != undefined) {
-                        html += "data-id=\"" + $(".cycledate").val() + "\"";
-                    }
-                }
-                html += " linktype=\"" + linktype + "\"";
-                if (linktype !== 'anchor') {
-                    if (linktype === 'countdown') {
-                        html += " target=\"" + linkvalue + "\"";
-                    }
-                    else
-                        html += " target=\"" + linktarget + "\"";
-                }
-                if ($("#countdowntype").val() != undefined) {
-                    //中文后缀
-                    if ($(".cdsuffix").prop("checked")) {
-                        html += " cdsuffix=\"true\"";
-                    } else {
-                        html += " cdsuffix=\"false\"";
-                    }
-                    html += " datetype=\"" + $("#countdowntype").val() + "\"";
-                }
-                var centerleft = utils.accDiv(width, 2) - 45;
-                var centertop = utils.accDiv(height, 2) - 45;
-                var tipchildstyle = "left:" + centerleft + 'px;top:' + centertop + 'px;';
-                html += ">";
-                if (linktype === 'link') {
-                    html += '<b style="' + tipchildstyle + '"></b>';
-                }
-                html += "</" + wraptag + ">";
-                return html;
-            }
-
-            //获得链接对象
-            //链接对象有多个临时行,所以需要此方法
-            function getLinkTarget(linktype) {
-                var val = $linktarget.find("select:first").find("option:selected").val();
-                var str = "";
-                if (val == "") {
-                    return str;
-                } else {
-                    str = " target=\"" + val + "\"";
-                    if (linktype == "countdown") {
-                        str += " data-id=\"" + $(".cycledate").val() + "\" datetype=\"" + $("#countdowntype").val() + "\"";
-                    }
-                }
-                return str;
-            }
-
             //调整滚动位置
             function reScroll() {
                 if ($(window).scrollTop() > 100) {
                     $("html body").animate({ scrollTop: 0 }, 200);
                 }
-            }
-
-            function setSize() {
-                $("#width").val(imgpos.w);
-                $("#height").val(imgpos.h);
-                $("#marginleft").val(imgpos.x);
-                $("#margintop").val(imgpos.y);
             }
 
             //载入jcrop
@@ -949,7 +610,7 @@
                                 x: c.x,
                                 y: c.y
                             };
-                            setSize();
+                            sidebar.setSize();
                         },
                         allowSelect: false
                     }, function () {
@@ -980,6 +641,42 @@
                 }
             }
 
+            var content = {
+                init: function() {
+                    $content.on("click", function (e) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        if ($(e.target).css("cursor") === "move" || $(e.target).css("cursor").indexOf("resize") >= 0) {
+                            return false;
+                        }
+                        var valid = sidebar.validCheck();
+                        if (valid === 1) {
+                            $("#savehotlink").trigger("click");
+                        }
+                        if (valid === 2) {
+                            $("#picsave").trigger("click");
+                        }
+                    });
+
+                    $(".sizewidth").on("keydown", function (e) {
+                        if (e.keyCode >= 48 && e.keyCode <= 57 || e.keyCode >= 96 && e.keyCode <= 105) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    });
+
+                    //sidebar.loadDate();
+
+                    $('.imgpos').on("click", function (e) {
+                        if (e.target.tagName === 'A') {
+                            e.preventDefault();
+                        }
+                    });
+                }
+            };
+
+
             //sidebar对象
             var sidebar = {
                 //显示
@@ -998,7 +695,7 @@
 
                     $sidebar.css("transform", "translateX(-10px)");
                     //设置宽高
-                    setSize();
+                    this.setSize();
                     isfirstTargetHandle = false;
                 },
                 //隐藏
@@ -1019,16 +716,334 @@
                     getValue: function () {
                         return $linktype.find("option:selected").val();
                     }
+                },
+                //验证
+                validCheck: function() {
+                    if ($editnote != null) {
+                        if ($baritem1.is(":hidden")) {
+                            var re = new RegExp(component.regexp.url, "ig");
+                            if ($linktype.val() == 'link') {
+                                if (!re.test($link.val())) {
+                                    uikitextend.uikit.notify({ message: "请输入正确的链接地址!" });
+                                    return false;
+                                }
+                            }
+                            return 1;
+                        } else {
+                            return 2;
+                        }
+                    }
+                    return 3;
+                },
+
+                //初始化
+                init: function () {
+                    $floatbtn.on('click', function () {
+                        $sidebar.css("transform", "translateX(-10px)");
+                        //$(this).hide();
+                        $floatbtn.css({ 'transform': 'rotate(720deg)', 'visibility': 'hidden' });
+                    });
+
+                    $("#picclose,#close").on("click", function () {
+                        if (typeof (jcrop_api) != "undefined") {
+                            $baritem2.show();
+                            $baritem1.hide();
+                        } else {
+                            $baritem1.show();
+                            $baritem2.hide();
+                        }
+                        $sidebar.css("transform", "translateX(100%)");
+                        $floatbtn.css({ "transform": "rotate(0deg)", 'visibility': 'visible' });
+
+//                        if (typeof (jcrop_api) != "undefined") {
+//                            jcrop_api.release();
+//                            jcrop_api.destroy();
+//                            delete jcrop_api;
+//                            $editnote.css("border", "2px solid blue");
+//                            $editnote = null;
+//                            isnewselected = false;
+//                            sidebar.hide();
+//                        }
+                    });
+
+                    $("#btnbar").delegate('li', 'click', function () {
+                        var $this = $(this);
+                        var index = $this.index();
+                        if (index === 0) {
+                            $("#addhotlink").trigger('click');
+                        }
+                        else
+                        if (index === 1) {
+                            if ($baritem2.css("display") == "block") {
+                                $("#close").trigger("click");
+                            }
+                            $baritem2.hide();
+                            $baritem1.show();
+                            $sidebar.css("transform", "translateX(-10px)");
+                        }
+                        else if (index === 2) {
+                            var valid = sidebar.validCheck();
+                            if (valid === false) {
+                                return false;
+                            }
+                            $("#save").trigger('click');
+                            editor.windowManager.close();
+                            //如果父存在DIV,即不是第一次编辑,则删除.
+                            if (editor.selection.getNode().parentNode.tagName === "DIV") {
+                                editor.dom.remove(editor.selection.getNode().parentNode);
+                            }
+                            editor.selection.setContent($content.html());
+                        }
+                        else if (index === 3) {
+                            editor.windowManager.close();
+                        }
+                    });
+
+                    $("#apply").on("click", function () {
+                        var w = parseInt($("#width").val());
+                        var h = parseInt($("#height").val());
+                        var x = parseInt($("#marginleft").val());
+                        var y = parseInt($("#margintop").val());
+                        if (typeof (jcrop_api) != "undefined") {
+                            jcrop_api.animateTo([w + x, h + y, x, y]);
+                            imgpos = {
+                                w: w,
+                                h: h,
+                                x: x,
+                                y: y
+                            };
+                        }
+                    });
+
+                    $("#addhotlink").on("click", function () {
+                        $("#close").trigger("click");
+                        loadJcrop();
+                        reScroll();
+                        $("#savehotlink").trigger("click");
+                        $(".imgpos:last").trigger("dblclick");
+                    });
+
+                    $("#savehotlink").on("click", function () {
+                        var valid = sidebar.validCheck();
+                        if (valid === false) {
+                            return false;
+                        }
+                        //保存时
+                        //1.将jcrop对象销毁
+                        //2.jcrop_api全局变量删除
+                        if (typeof (jcrop_api) != "undefined") {
+                            jcrop_api.destroy();
+                            delete jcrop_api;
+                        } else {
+                            return false;
+                        }
+                        format();
+                        //清理
+                        clean();
+                        //添加dom
+                        $cropwrap.append(sidebar.node.get());
+                        //        $cropwrap.append(getLinkArea());
+                        isnewselected = false;
+
+                        //删除Note
+                        sidebar.node.remove();
+                        $("img").css("border", "0");
+                        fixArea(true);
+                        isfirstTargetHandle = true;
+                    });
+
+                    $("#delete").on("click", function () {
+                        sidebar.node.remove();
+                        if (typeof (jcrop_api) != "undefined") {
+                            jcrop_api.destroy();
+                            delete jcrop_api;
+                            isnewselected = false;
+                        }
+                    });
+
+                    $("#save").on("click", function () {
+                        //保存关闭时,执行保存热点
+                        $("#picsave").trigger("click");
+                        $("#savehotlink").trigger("click");
+                        fixArea(false);
+                    });
+
+                    $("#closesidebar").on("click", function () {
+                        $("#savehotlink").trigger("click");
+                    });
+
+                    //链接类型点击事件 兼容chrome
+                    $linktype.change(function () {
+                        //先删除临时行
+
+                        sidebar.temprow.remove();
+                        var $this = $(this),
+                            linkvalue = linktype[$this.val()],
+                            html = "",
+                            linkval = $this.val();
+                        //如果相等则禁止输入地址
+                        if (linkval == "button" || linkval == "anchor" || linkval == "countdown") {
+                            $("#linkwrap").hide();
+                        } else {
+                            $("#linkwrap").show();
+                        }
+                        //触发函数(针对倒计时子元素超过1)
+                        var triggerFn = "";
+
+                        //如果是锚点(读取并生成锚点)
+                        if (linkval == "anchor") {
+                            //锚点只读第一个编辑器的
+                            var editor1 = parent.tinymce.editors[0];
+                            var $anchor = $(editor1.getBody()).find(".tempanchor");
+                            var len = $anchor.length;
+                            if (len > 0) {
+                                html = getTempRowHtml(function () {
+                                    $anchor.each(function () {
+                                        var id = $(this).attr("id");
+                                        html += "<option value=\"" + id + "\">" + id + "</option>";
+                                    });
+                                    return html;
+                                }, "select");
+                            } else {
+                                html = getTempRowHtml(function () {
+                                    return "<div class=\"uk-alert\">没有锚点</div>";
+                                });
+                            }
+                        }
+                            //如果是倒计时
+                        else if (linkval == "countdown") {
+                            html = getTempRowHtml(function () {
+                                for (var i = 0; i < linkvalue.length; i++) {
+                                    html += "<option value=\"" + linkvalue[i] + "\">" + linkvalue[i] + "</option>";
+                                }
+                                return html;
+                            }, "select");
+
+                            triggerFn = function () {
+                                if ($(".temprow").length == 1) {
+                                    $(".temprow").find("select").children("option").eq(0).prop("selected", "selected").trigger("click");
+                                }
+                            };
+                        } else {
+                            if (linkval === 'link') {
+                                html = component.link;
+                                if ($link.val() === '') {
+                                    $link.val('http://');
+                                }
+                            }
+                            else if (linkval === 'button') {
+                                html = component.button;
+                            }
+                        }
+                        $linktarget.html(html);
+                        if (typeof triggerFn == "function") {
+                            triggerFn();
+                        }
+                    });
+
+                    //链接目标点击事件
+                    $linktarget.delegate("span,select:first", "click", function (e) {
+                        targetHandle($(this), e);
+                    });
+
+                    this.loadDate();
+                },
+
+                //加载时间
+                loadDate: function() {
+                    var startdate = $img.attr("startdate");
+                    var enddate = $img.attr("enddate");
+                    $startdate.val(startdate);
+                    $enddate.val(enddate);
+                },
+
+                setSize: function() {
+                    $("#width").val(imgpos.w);
+                    $("#height").val(imgpos.h);
+                    $("#marginleft").val(imgpos.x);
+                    $("#margintop").val(imgpos.y);
+                },
+                //便条区域
+                node: {
+                    get: function() {
+                        var width = (imgpos.w - 6);
+                        var height = (imgpos.h - 6);
+                        var left = imgpos.x;
+                        var top = imgpos.y;
+                        var linktarget = $linktarget.find("input[type='radio']:checked").val();
+                        var linkvalue = $linktarget.find("select:first").find("option:selected").val();
+                        var linktype = sidebar.linktype.getValue();
+                        var wraptag = linktype === 'countdown' ? 'div' : 'a';
+                        var imgposposition = "left:" + left + "px;top:" + top + "px;width:" + width + "px;height:" + (imgpos.h - 6) + "px;";
+                        var html =
+                            "<" + wraptag + " contenteditable=\"false\" class=\"imgpos\" style=\"background:url(#);position:absolute;border:2px solid blue;" + imgposposition + "\"";
+
+                        if (linktype === 'link') {
+                            html += " href=\"" + $link.val() + "\"";
+                        }
+
+                        if (linktype === 'anchor') {
+                            html += " href=\"#" + linkvalue + "\"";
+                        }
+                        if (linktype === "countdown") {
+                            html += "datetype=\"" + $("#countdowntype").val() + "\"";
+                            if ($(".cycledate").val() != undefined) {
+                                html += "data-id=\"" + $(".cycledate").val() + "\"";
+                            }
+                        }
+                        html += " linktype=\"" + linktype + "\"";
+                        if (linktype !== 'anchor') {
+                            if (linktype === 'countdown') {
+                                html += " target=\"" + linkvalue + "\"";
+                            }
+                            else
+                                html += " target=\"" + linktarget + "\"";
+                        }
+                        if ($("#countdowntype").val() != undefined) {
+                            //中文后缀
+                            if ($(".cdsuffix").prop("checked")) {
+                                html += " cdsuffix=\"true\"";
+                            } else {
+                                html += " cdsuffix=\"false\"";
+                            }
+                            html += " datetype=\"" + $("#countdowntype").val() + "\"";
+                        }
+                        var centerleft = utils.accDiv(width, 2) - 45;
+                        var centertop = utils.accDiv(height, 2) - 45;
+                        var tipchildstyle = "left:" + centerleft + 'px;top:' + centertop + 'px;';
+                        html += ">";
+                        if (linktype === 'link') {
+                            html += '<b style="' + tipchildstyle + '"></b>';
+                        }
+                        html += "</" + wraptag + ">";
+                        return html;
+                    },
+                    getIndex: function() {
+                        var $imgpos = $(".imgpos");
+                        for (var i = 0; i < $imgpos.length; i++) {
+                            if ($editnote.attr("style") == $imgpos.eq(i).attr("style")) {
+                                return i;
+                            }
+                        }
+                        return 0;
+                    },
+                    remove: function() {
+                        //如果编辑对象不为null,则删除当前编辑的对象
+                        if ($editnote != null) {
+                            $editnote.remove();
+                            $editnote = null;
+                            //移除对应map
+                            if ($editmap != null)
+                                $editmap.remove();
+                            if (typeof (jcrop_api) != "undefined") {
+                                jcrop_api.destroy();
+                            }
+                            isnewselected = false;
+                            sidebar.hide();
+                        }
+                    }
                 }
             };
-
-            $('.imgpos').on("click", function (e) {
-                if (e.target.tagName === 'A') {
-                    e.preventDefault();
-                }
-            });
-
         });
     });
-
 });

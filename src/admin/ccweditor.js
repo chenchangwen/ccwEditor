@@ -144,33 +144,33 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     title: zhTitle5,
                     url: tinymcepath + "src/edit/index.html?20152121940",
                     width: w,
-                    height: h,
-                    buttons: [
-                        {
-                            text: zhTitle2,
-                            onclick: function () {
-                                $jq("#" + getMceActiveId()).find(iframe).contents().find("#addhotlink").click();
-                            }
-                        },
-                        {
-                            text: zhTitle3,
-                            onclick: function () {
-                                $jq("#" + getMceActiveId()).find(iframe).contents().find("#save").click();
-                                var content = $jq("#" + getMceActiveId()).find(iframe).contents().find("#content").html();
-                                //                            content = content.replace(/(\.)*\/public/ig, "\.\/public");
-                                tinymce.activeEditor.windowManager.close();
-                                //如果父存在DIV,即不是第一次编辑,则删除.
-                                if (tinymce.activeEditor.selection.getNode().parentNode.tagName === "DIV") {
-                                    tinyMCE.activeEditor.dom.remove(tinymce.activeEditor.selection.getNode().parentNode);
-                                }
-                                tinymce.activeEditor.selection.setContent(content);
-                            }
-                        },
-                        {
-                            text: "Close",
-                            onclick: "close"
-                        }
-                    ]
+                    height: h
+//                    buttons: [
+////                        {
+////                            text: zhTitle2,
+////                            onclick: function () {
+////                                $jq("#" + getMceActiveId()).find(iframe).contents().find("#addhotlink").click();
+////                            }
+////                        },
+//                        {
+//                            text: zhTitle3,
+//                            onclick: function () {
+//                                $jq("#" + getMceActiveId()).find(iframe).contents().find("#save").click();
+//                                var content = $jq("#" + getMceActiveId()).find(iframe).contents().find("#content").html();
+//                                //                            content = content.replace(/(\.)*\/public/ig, "\.\/public");
+//                                tinymce.activeEditor.windowManager.close();
+//                                //如果父存在DIV,即不是第一次编辑,则删除.
+//                                if (tinymce.activeEditor.selection.getNode().parentNode.tagName === "DIV") {
+//                                    tinyMCE.activeEditor.dom.remove(tinymce.activeEditor.selection.getNode().parentNode);
+//                                }
+//                                tinymce.activeEditor.selection.setContent(content);
+//                            }
+//                        },
+//                        {
+//                            text: "Close",
+//                            onclick: "close"
+//                        }
+//                    ]
                 });
             }
         },
@@ -306,17 +306,25 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
 
             //给cropwrap 加p
             convertbatch(editor.dom.select(classcropwrap), function (el) {
-
                 if (mcequery(el).parent()[0].tagName !== 'P') {
                     mcequery(el).wrap(ccweditor.template.p());
                 } else {
                     //不让P包住多个cropwrap
-                    // mcequery(el).parent().unwrap();
+                    //这儿使用mce的命令,由于有可能就剩下一个p的情况,mce在任何内容下都需要一个p包住.所以如果用js去删除mce的内容会导致mce出错
                     editor.execCommand("mceRemoveNode", false, mcequery(el).parent());
                     mcequery(el).wrap(ccweditor.template.p());
                 }
             });
 
+        },
+        foreach: function(selector, callback) {
+            var el;
+            for (var i = 0, len = selector.length; i < len; i++) {
+                el = selector[i];
+                if (typeof callback === "function") {
+                    callback(el);
+                }
+            }
         },
         //转换编辑器元素
         convert: function (el) {
@@ -359,8 +367,9 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                         $jqel.wrap(ccweditor.template.cropwrap());
                     }
                 }
-                //不让图片隐藏
-                $jqel.css(display, '').css(display, 'block').removeAttr(usemap).removeAttr('id');
+                $jqel.removeAttr(usemap).removeAttr('id');
+                //重置宽高,避免因父元素而看不到图片
+                //$jqel.attr({ 'width': $jqel.width(), 'heigth': $jqel.height() });
             }
             //div.cropwrap
             else if ($jqel.hasClass(cropwrap)) {
@@ -439,6 +448,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     }
                     $jqel.attr("id", name).addClass("tempanchor");
                 }
+                $jqel.css("background", "url:('#')");
             }
         },
         //清理
@@ -446,8 +456,9 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             for (var i = 0, len = el.length; i < len; i++) {
                 var $jqel = $jq(el[i]);
                 $jqel.css("border", "0").removeAttr(contenteditable);
-                var style = $jqel.attr("style");
+                var style = $jqel.attr("style").replace(/\"\#\"/g, "#");
                 $jqel.attr("data-mce-style", style);
+                $jqel.attr('style', style);
             }
         }
     }
@@ -603,6 +614,13 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     e.preventDefault();
                 }
             });
+
+            editor.on("dblclick", function (e) {
+                if (e.target.tagName === "IMG") {
+                    ccweditor.editimage();
+                }
+            });
+
             editor.on("keydown", function (e) {
                 var ev = document.all ? window.event : e;
                 var selectNode = tinymce.activeEditor.selection.getNode();
@@ -687,12 +705,14 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
     };
 
     $jq(document).ready(function () {
-        $jq("form").submit(function () {
+        $jq("form").submit(function (e) {
+            e.preventDefault();
             //提交前清理
             for (var j = 0; j < tinyMCE.editors.length; j++) {
                 var editortemp = tinyMCE.editors[j];
                 ccweditor.clean(editortemp.dom.select(classimgpos));
             }
+            this.submit();
         });
     });
 

@@ -6,7 +6,7 @@
                     message: '',
                     status: 'danger',
                     timeout: 800,
-                    pos: 'top-left'
+                    pos: 'bottom-center'
                 };
                 var opt = $.extend({}, defaultopt, option);
                 UI.notify(opt);
