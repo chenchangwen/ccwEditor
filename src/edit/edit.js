@@ -683,7 +683,6 @@
                 //显示
                 show: function (barindex) {
                     if (barindex != undefined) {
-                        debugger;
                         $('.baritem').hide().eq(barindex).show();
                         if (isactivebtnhidden) {
                             $sidebar.css("transform", "translateX(100%)");
