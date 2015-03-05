@@ -232,6 +232,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                 parent.addClass(imgpos);
                 //是否有coords(即是area)
                 var pcoords = parent.attr('coords');
+
                 if (pcoords != undefined) {
                     var tcoords = pcoords.split(',');
                     var coords = {
@@ -240,7 +241,8 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                         w: tcoords[2], //width
                         h: tcoords[3]  //heigth
                     };
-                    var style = 'position:absolute;left:' + coords.x + 'px;top:' + coords.y + 'px;width:' + (coords.w - coords.x) + 'px;height:'+coords.h+'px;';
+                    var style = 'position:absolute;left:' + coords.x + 'px;top:' + coords.y + 'px;width:' + (coords.w - coords.x) + 'px;height:' + (coords.h - coords.y) + 'px;';
+
                     //给area增加style,以便定位
                     fromelement.attr('style', style);
                     parent.attr('style', style).removeAttr('coords').removeAttr('shape');
@@ -369,7 +371,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                 }
                 $jqel.removeAttr(usemap).removeAttr('id');
                 //重置宽高,避免因父元素而看不到图片
-                //$jqel.attr({ 'width': $jqel.width(), 'heigth': $jqel.height() });
+                $jqel.attr({ 'width': $jqel.width(), 'heigth': $jqel.height() });
             }
             //div.cropwrap
             else if ($jqel.hasClass(cropwrap)) {
@@ -616,7 +618,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             });
 
             editor.on("dblclick", function (e) {
-                if (e.target.tagName === "IMG") {
+                if (e.target.tagName === "IMG" || e.target.tagName === "A") {
                     ccweditor.editimage();
                 }
             });

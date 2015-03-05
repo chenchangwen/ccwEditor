@@ -5,7 +5,7 @@
             //链接类型对象
             var linktype = {
                 link: [],
-                button: [],
+                button: ["youhui", "login"],
                 anchor: [],
                 countdown: ["距离开始时间", "距离结束时间", "时间循环", "先开始后结束"]
             };
@@ -208,21 +208,20 @@
                     txt = $.trim(obj.text()),
                     str = linktype["button"][0],
                     value = "";
-                if (isfirstTargetHandle) {
-                    value = $img.children().eq(sidebar.node.getIndex()).data("id");
-                    value = value == undefined ? "" : value;
-                }
-                //如果是第一次目标对象处理并且保存的值,或者重新选择的值等于'领取优惠券' 
-                if ((isfirstTargetHandle && ($editnote.attr("target") == str)) || txt == str) {
-                    sidebar.temprow.remove();
+                value = $editnote.data('id');
+                value = value == undefined ? "" : value;
+                var linktargetvalue = obj.find("input[type='radio']:checked").val();
 
+                //如果是第一次目标对象处理并且保存的值,或者重新选择的值等于'领取优惠券' 
+                if (linktargetvalue === str) {
+                    sidebar.temprow.remove();
                     html = getTempRowHtml(function () {
                         return "<input type=\"text\" placeholder=\"输入优惠券id,号分割,最多3个\" value=\"" + value + "\" style=\"width: 100%\">";
                     });
                     obj.parent().parent().after(html);
                 }
                     //如果是登陆
-                else if (txt == linktype["button"][1]) {
+                else if (linktargetvalue === linktype["button"][1]) {
                     sidebar.temprow.remove();
                 }
                     //如果是倒计时
@@ -683,6 +682,8 @@
                 show: function () {
                     $baritem2.show();
                     $baritem1.hide();
+                    $floatbtn.css({ "transform": "rotate(720deg)", 'visibility': 'hidden' });
+
                     //载入已有值,
                     sidebar.temprow.remove();
                     $link.val($editnote.attr("href"));
@@ -738,48 +739,45 @@
 
                 //初始化
                 init: function () {
-                    $floatbtn.on('click', function () {
-                        $sidebar.css("transform", "translateX(-10px)");
-                        //$(this).hide();
-                        $floatbtn.css({ 'transform': 'rotate(720deg)', 'visibility': 'hidden' });
-                    });
+//                    $floatbtn.on('click', function () {
+//                        $sidebar.css("transform", "translateX(-10px)");
+//                        $floatbtn.css({ 'transform': 'rotate(720deg)', 'visibility': 'hidden' });
+                    //                    });
 
-                    $("#picclose,#close").on("click", function () {
+                    var isbtnhidden = false;
+                    $(".btnhidden").on("click", function () {
+                        debugger;
                         if (typeof (jcrop_api) != "undefined") {
                             $baritem2.show();
                             $baritem1.hide();
+                        } 
+                        if (isbtnhidden) {
+                            $sidebar.css("transform", "translateX(-10px)");
+                            $floatbtn.css({ 'transform': 'rotate(720deg)', 'visibility': 'hidden' });
+                            isbtnhidden = false;
                         } else {
-                            $baritem1.show();
-                            $baritem2.hide();
-                        }
-                        $sidebar.css("transform", "translateX(100%)");
-                        $floatbtn.css({ "transform": "rotate(0deg)", 'visibility': 'visible' });
-
-//                        if (typeof (jcrop_api) != "undefined") {
-//                            jcrop_api.release();
-//                            jcrop_api.destroy();
-//                            delete jcrop_api;
-//                            $editnote.css("border", "2px solid blue");
-//                            $editnote = null;
-//                            isnewselected = false;
-//                            sidebar.hide();
-//                        }
+                            $sidebar.css("transform", "translateX(100%)");
+                            $floatbtn.css({ "transform": "rotate(0deg)", 'visibility': 'visible' });
+                            isbtnhidden = true;
+                        }   
                     });
 
                     $("#btnbar").delegate('li', 'click', function () {
                         var $this = $(this);
                         var index = $this.index();
                         if (index === 0) {
+                            isbtnhidden = false;
                             $("#addhotlink").trigger('click');
                         }
                         else
                         if (index === 1) {
-                            if ($baritem2.css("display") == "block") {
-                                $("#close").trigger("click");
-                            }
+//                            if ($baritem2.css("display") == "block") {
+//                                $("#close").trigger("click");
+//                            }
                             $baritem2.hide();
                             $baritem1.show();
                             $sidebar.css("transform", "translateX(-10px)");
+                            isbtnhidden = false;
                         }
                         else if (index === 2) {
                             var valid = sidebar.validCheck();
@@ -816,8 +814,8 @@
                     });
 
                     $("#addhotlink").on("click", function () {
-                        $("#close").trigger("click");
                         loadJcrop();
+//                        $("#close").trigger("click");
                         reScroll();
                         $("#savehotlink").trigger("click");
                         $(".imgpos:last").trigger("dblclick");
@@ -942,7 +940,11 @@
                     });
 
                     //链接目标点击事件
-                    $linktarget.delegate("span,select:first", "click", function (e) {
+                    $linktarget.delegate("select:first", "click", function (e) {
+                        targetHandle($(this), e);
+                    });
+
+                    $linktarget.delegate("span", "click", function (e) {
                         targetHandle($(this), e);
                     });
 
@@ -965,7 +967,7 @@
                 },
                 //便条区域
                 node: {
-                    get: function() {
+                    get: function () {
                         var width = (imgpos.w - 6);
                         var height = (imgpos.h - 6);
                         var left = imgpos.x;
@@ -980,6 +982,12 @@
 
                         if (linktype === 'link') {
                             html += " href=\"" + $link.val() + "\"";
+                        }
+
+                        if (linktype === 'button') {
+                            if (linktarget === 'youhui') {
+                                html += 'data-id="' + $('.temprow').find('input').val() + '"';
+                            }
                         }
 
                         if (linktype === 'anchor') {

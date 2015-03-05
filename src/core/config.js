@@ -9,9 +9,16 @@
         uikitextend: '../core/uikitextend',
         utils: '../core/utils'
     },
+    shim: {
+        jqextend: ['jquery'],
+        uikitextend: ['jquery'],
+        utils: ['jquery'],
+        "spin": ['jquery']
+    },
     config: {
         "uikit": {
             "base": "../../css/uikit/js"
         }
-    }
+    },
+    waitSeconds: 200
 });

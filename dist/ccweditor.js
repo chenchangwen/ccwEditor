@@ -15,8 +15,8 @@ $(document).ready(function () {
             ajax: 1
         };
         var len = data.length <= maxlen ? data.length : maxlen;
-        for (var i = 0; i < len; i++) {
-            query['cid' + i] = data[i];
+        for (var i = 1; i < len; i++) {
+            query['cid' + i] = data[i-1];
         }
         $.ajax({
             url: AJAX_URL,
