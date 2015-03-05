@@ -116,7 +116,7 @@
 
 <div id="sidebar" class="item">
     <!-- <div class="handle"></div>-->
-    <div class="uk-container" style="padding: 0; position: relative;" id="baritem1">
+    <div class="uk-container baritem" style="padding: 0; position: relative;" id="baritem1">
         <div class="uk-panel uk-panel-box uk-panel-box-secondary">
             <h3 class="uk-panel-title" id="paneltitle">当图片设定</h3>
             <form class="uk-form uk-form-stacked" id="form1">
@@ -124,9 +124,9 @@
                     <label class="uk-form-label">倒计时</label>
                     <div class="uk-form-controls">
                         <label>开始</label>
-                        <input type="text" id="startdate" onfocus=" WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss', maxDate: '#F{$dp.$D(\'enddate\')||\'2020-10-01\'}' }) " style="width: 165px"/>
+                        <input type="text" id="startdate" onfocus=" WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss', maxDate: '#F{$dp.$D(\'enddate\')||\'2020-10-01\'}' }) " style="width: 165px" />
                         <label>结束</label>
-                        <input type="text" id="enddate" onfocus=" WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss', minDate: '#F{$dp.$D(\'startdate\')}', maxDate: '2020-10-01' }) " style="width: 165px"/>
+                        <input type="text" id="enddate" onfocus=" WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss', minDate: '#F{$dp.$D(\'startdate\')}', maxDate: '2020-10-01' }) " style="width: 165px" />
                     </div>
                 </div>
 
@@ -165,7 +165,7 @@
             </form>
         </div>
     </div>
-    <div class="uk-container" style="padding: 0; display: none" id="baritem2">
+    <div class="uk-container baritem" style="padding: 0; display: none" id="baritem2">
         <div class="uk-panel uk-panel-box uk-panel-box-secondary">
             <h3 class="uk-panel-title" id="paneltitle">当前选中区域</h3>
             <form class="uk-form uk-form-stacked " id="form">
@@ -173,13 +173,13 @@
                     <label for="width" class="uk-form-label">区域状态</label>
                     <div class="uk-form-controls">
                         <label>宽</label>
-                        <input type="text" placeholder="宽" id="width" class="sizewidth" style="color: red" maxlength="4"/>
+                        <input type="text" placeholder="宽" id="width" class="sizewidth" style="color: red" maxlength="4" />
                         <label>高</label>
-                        <input type="text" placeholder="高" id="height" class="sizewidth" style="color: red" maxlength="4"/>
+                        <input type="text" placeholder="高" id="height" class="sizewidth" style="color: red" maxlength="4" />
                         <label>左边距</label>
-                        <input type="text" placeholder="左边距" id="marginleft" class="sizewidth" style="color: red" maxlength="4"/>
+                        <input type="text" placeholder="左边距" id="marginleft" class="sizewidth" style="color: red" maxlength="4" />
                         <label>上边距</label>
-                        <input type="text" placeholder="上边距" id="margintop" class="sizewidth" style="color: red" maxlength="4"/>
+                        <input type="text" placeholder="上边距" id="margintop" class="sizewidth" style="color: red" maxlength="4" />
                         <a class="uk-button uk-button-primary	" href="javascript:void(0)" id="apply">应用</a>
                     </div>
                 </div>

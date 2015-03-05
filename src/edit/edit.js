@@ -25,6 +25,8 @@
                 $tblimg = $("#tblimg"),
                 $body = $('body'),
                 $floatbtn = $('#floatbtn'),
+                //是否激活隐藏按钮
+                isactivebtnhidden = true,
                 $img,
                 //图片位置
                 imgpos,
@@ -679,11 +681,27 @@
             //sidebar对象
             var sidebar = {
                 //显示
-                show: function () {
+                show: function (barindex) {
+                    if (barindex != undefined) {
+                        debugger;
+                        $('.baritem').hide().eq(barindex).show();
+                        if (isactivebtnhidden) {
+                            $sidebar.css("transform", "translateX(100%)");
+                            $floatbtn.css({ "transform": "rotate(0deg)", 'visibility': 'visible' });
+                           
+                        }
+                        else {
+                            $sidebar.css("transform", "translateX(-10px)");
+                            $floatbtn.css({ 'transform': 'rotate(720deg)', 'visibility': 'hidden' });
+                        }
+                        isactivebtnhidden = !isactivebtnhidden;
+                        return false;
+                    }
                     $baritem2.show();
                     $baritem1.hide();
-                    $floatbtn.css({ "transform": "rotate(720deg)", 'visibility': 'hidden' });
 
+                    $floatbtn.css({ "transform": "rotate(720deg)", 'visibility': 'hidden' });
+                    isactivebtnhidden = true;
                     //载入已有值,
                     sidebar.temprow.remove();
                     $link.val($editnote.attr("href"));
@@ -693,7 +711,6 @@
                     $linktarget.find("option[value='" + $editnote.attr("target") + "']").prop("selected", "selected").trigger("click");
                     //时间类型
                     $("#countdowntype").find("option[value='" + $editnote.attr("datetype") + "']").prop("selected", "selected");
-
                     $sidebar.css("transform", "translateX(-10px)");
                     //设置宽高
                     this.setSize();
@@ -701,10 +718,13 @@
                 },
                 //隐藏
                 hide: function () {
+                    debugger;
                     $link.val("");
                     //类型默认选择第一个
                     $linktype.children("option").eq(0).prop("selected", "selected").trigger("click");
                     $sidebar.css("transform", "translateX(100%)");
+                    $floatbtn.css({ "transform": "rotate(0deg)", 'visibility': 'visible' });
+                    isactivebtnhidden = false;
                 },
                 //临时行
                 temprow: {
@@ -739,45 +759,24 @@
 
                 //初始化
                 init: function () {
-//                    $floatbtn.on('click', function () {
-//                        $sidebar.css("transform", "translateX(-10px)");
-//                        $floatbtn.css({ 'transform': 'rotate(720deg)', 'visibility': 'hidden' });
-                    //                    });
-
-                    var isbtnhidden = false;
                     $(".btnhidden").on("click", function () {
-                        debugger;
                         if (typeof (jcrop_api) != "undefined") {
-                            $baritem2.show();
-                            $baritem1.hide();
-                        } 
-                        if (isbtnhidden) {
-                            $sidebar.css("transform", "translateX(-10px)");
-                            $floatbtn.css({ 'transform': 'rotate(720deg)', 'visibility': 'hidden' });
-                            isbtnhidden = false;
+                            sidebar.show(1);
                         } else {
-                            $sidebar.css("transform", "translateX(100%)");
-                            $floatbtn.css({ "transform": "rotate(0deg)", 'visibility': 'visible' });
-                            isbtnhidden = true;
-                        }   
+                            sidebar.show(0);
+                        }  
                     });
 
                     $("#btnbar").delegate('li', 'click', function () {
                         var $this = $(this);
                         var index = $this.index();
                         if (index === 0) {
-                            isbtnhidden = false;
+                            sidebar.show(1);
                             $("#addhotlink").trigger('click');
                         }
-                        else
-                        if (index === 1) {
-//                            if ($baritem2.css("display") == "block") {
-//                                $("#close").trigger("click");
-//                            }
-                            $baritem2.hide();
-                            $baritem1.show();
-                            $sidebar.css("transform", "translateX(-10px)");
-                            isbtnhidden = false;
+                        else if (index === 1) {
+                            isactivebtnhidden = false;
+                            sidebar.show(0);
                         }
                         else if (index === 2) {
                             var valid = sidebar.validCheck();
