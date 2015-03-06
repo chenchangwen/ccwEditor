@@ -373,7 +373,8 @@
                     } else {
                         $img.attr("dayhours", "false");
                     }
-                    $sidebar.css("transform", "translateX(100%)");
+                    sidebar.show(0);
+
                 });
 
                 var maptrnpic = $img.attr("trnpic") == undefined ? "" : $img.attr("trnpic"), forpic, forpictxt;
@@ -716,14 +717,18 @@
                     isfirstTargetHandle = false;
                 },
                 //隐藏
-                hide: function () {
-                    debugger;
+                hide: function (pararm) {
                     $link.val("");
                     //类型默认选择第一个
                     $linktype.children("option").eq(0).prop("selected", "selected").trigger("click");
                     $sidebar.css("transform", "translateX(100%)");
                     $floatbtn.css({ "transform": "rotate(0deg)", 'visibility': 'visible' });
                     isactivebtnhidden = false;
+                    var msg = '保存成功!';
+                    if (pararm === 'delete') {
+                        msg = '删除成功!';
+                    }
+                    uikitextend.uikit.notify({ message: msg,status:'success'});
                 },
                 //临时行
                 temprow: {
@@ -740,6 +745,11 @@
                 //验证
                 validCheck: function() {
                     if ($editnote != null) {
+                        if ($linktarget.text() === '没有锚点') {
+                            uikitextend.uikit.notify({ message: "没有锚点,保存失败!" });
+                            return 3;
+                        }
+                        else
                         if ($baritem1.is(":hidden")) {
                             var re = new RegExp(component.regexp.url, "ig");
                             if ($linktype.val() == 'link') {
@@ -849,7 +859,7 @@
                     });
 
                     $("#delete").on("click", function () {
-                        sidebar.node.remove();
+                        sidebar.node.remove('delete');
                         if (typeof (jcrop_api) != "undefined") {
                             jcrop_api.destroy();
                             delete jcrop_api;
@@ -931,7 +941,12 @@
                                 html = component.button;
                             }
                         }
-                        $linktarget.html(html);
+                        if ($.isPlainObject(html)) {
+                            $linktarget.html(html.html);
+                            utils.callAllFn(html, 'html');
+                        } else {
+                            $linktarget.html(html);
+                        }
                         if (typeof triggerFn == "function") {
                             triggerFn();
                         }
@@ -1033,7 +1048,7 @@
                         }
                         return 0;
                     },
-                    remove: function() {
+                    remove: function(pararm) {
                         //如果编辑对象不为null,则删除当前编辑的对象
                         if ($editnote != null) {
                             $editnote.remove();
@@ -1045,7 +1060,7 @@
                                 jcrop_api.destroy();
                             }
                             isnewselected = false;
-                            sidebar.hide();
+                            sidebar.hide(pararm);
                         }
                     }
                 }

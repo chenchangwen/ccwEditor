@@ -6,9 +6,13 @@
                     message: '',
                     status: 'danger',
                     timeout: 800,
-                    pos: 'bottom-center'
                 };
                 var opt = $.extend({}, defaultopt, option);
+                if (opt.status === 'success') {
+                    opt.message = '<i class="uk-icon-check"></i>' + opt.message;
+                } else {
+                    opt.message = '<i class="uk-icon-warning"></i>' + opt.message;
+                }
                 UI.notify(opt);
             }
         }

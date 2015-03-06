@@ -96,5 +96,18 @@ define(['jquery', 'jqextend'], function ($) {
         return true;
     }
 
+    //调用所有方法
+    exports.callAllFn = function (obj) {
+        for (var pfn in obj) {
+            debugger;
+            for (var i = 1; i < arguments.length; i++) {
+                if (pfn !== arguments[i]) {
+                    if (typeof (obj[pfn]) == "function") {
+                        obj[pfn]();
+                    }
+                }
+            }
+        }
+    }
     return exports;
 });

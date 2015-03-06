@@ -145,32 +145,6 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     url: tinymcepath + "src/edit/index.html?20152121940",
                     width: w,
                     height: h
-//                    buttons: [
-////                        {
-////                            text: zhTitle2,
-////                            onclick: function () {
-////                                $jq("#" + getMceActiveId()).find(iframe).contents().find("#addhotlink").click();
-////                            }
-////                        },
-//                        {
-//                            text: zhTitle3,
-//                            onclick: function () {
-//                                $jq("#" + getMceActiveId()).find(iframe).contents().find("#save").click();
-//                                var content = $jq("#" + getMceActiveId()).find(iframe).contents().find("#content").html();
-//                                //                            content = content.replace(/(\.)*\/public/ig, "\.\/public");
-//                                tinymce.activeEditor.windowManager.close();
-//                                //如果父存在DIV,即不是第一次编辑,则删除.
-//                                if (tinymce.activeEditor.selection.getNode().parentNode.tagName === "DIV") {
-//                                    tinyMCE.activeEditor.dom.remove(tinymce.activeEditor.selection.getNode().parentNode);
-//                                }
-//                                tinymce.activeEditor.selection.setContent(content);
-//                            }
-//                        },
-//                        {
-//                            text: "Close",
-//                            onclick: "close"
-//                        }
-//                    ]
                 });
             }
         },
@@ -611,10 +585,16 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     }
                 });
             }
+
             editor.on("click", function (e) {
                 if (e.target.tagName === "A") {
+                    var parentNode = tinymce.activeEditor.selection.getNode().parentNode;
+                    if (mcequery(parentNode).hasClass(cropwrap)) {
+                        tinyMCE.activeEditor.selection.select(mcequery(parentNode).find('img')[0]);
+                    }
                     e.preventDefault();
                 }
+
             });
 
             editor.on("dblclick", function (e) {
