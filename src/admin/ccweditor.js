@@ -461,8 +461,8 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             editor.on("init", function () {
                 ccweditor.format();
                 //测试用
-                //editor.setContent('');
-                // editor.insertContent('<div class="bbbb"><div class="aaaa"><img usemap="mymap" src="http://localhost:1617/images/test.jpg?123" /><map name="mymap"><AREA SHAPE=\"rect\"COORDS=\"0,0,82,126\"href=\"#\"></map></div>');
+                editor.setContent('');
+                 editor.insertContent('<img usemap="mymap" src="http://localhost:1617/images/test.jpg?123" />');
                 tinymce.activeEditor.transitionPic = [];
             });
 
@@ -587,11 +587,18 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             }
 
             editor.on("click", function (e) {
-                if (e.target.tagName === "A") {
-                    var parentNode = tinymce.activeEditor.selection.getNode().parentNode;
-                    if (mcequery(parentNode).hasClass(cropwrap)) {
-                        tinyMCE.activeEditor.selection.select(mcequery(parentNode).find('img')[0]);
+                if (e.target.tagName === "A" || e.target.tagName ==='DIV') {
+                    var selection = tinymce.activeEditor.selection;
+                    var currentNode = selection.getNode();
+                    var parentNode = currentNode.parentNode;
+                    var node;
+                    if (mcequery(currentNode).hasClass(cropwrap)) {
+                        node = currentNode;
                     }
+                    if (mcequery(parentNode).hasClass(cropwrap)) {
+                        node = parentNode;
+                    }
+                    tinyMCE.activeEditor.selection.select(mcequery(node).find('img')[0]);
                     e.preventDefault();
                 }
 
@@ -675,14 +682,11 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
     function isValidCheck() {
         $jq("body").focus();
         //如果父元素有cropwrap则还是选择图片
-        if (mcequery(tinymce.activeEditor.selection.getNode().parentNode).hasClass(cropwrap)) {
-            tinyMCE.activeEditor.dom.select(tinyMCE.activeEditor.dom.select(img)[0]);
+       
+        if (tinymce.activeEditor.selection.getNode().tagName !== "IMG") {
+            alert("请选择图片");
+            return false;
         }
-        else
-            if (tinymce.activeEditor.selection.getNode().tagName !== "IMG") {
-                alert("请选择图片");
-                return false;
-            }
         return true;
     };
 

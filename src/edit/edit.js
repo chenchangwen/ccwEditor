@@ -1,5 +1,5 @@
 ﻿require(['../core/config'], function() {
-    require(['jquery', 'Jcrop', 'utils', 'component', 'spin', 'uikitextend'], function ($, Jcrop, utils, component, Spinner, uikitextend) {
+    require(['jquery', 'Jcrop', 'utils', 'component', 'spin', 'uikitextend','../component/utils'], function ($, Jcrop, utils, component, Spinner, uikitextend) {
         $(document).ready(function () {
             //变量声明
             //链接类型对象
@@ -51,7 +51,7 @@
             //载入内容
             function loadContent() {
                 var willload;
-                if (editor.selection.getNode().parentNode.tagName == "DIV") {
+                if (editor.selection.getNode().parentNode.tagName === "DIV") {
                     willload = $(editor.selection.getNode().parentNode).clone();
                 } else {
                     willload = editor.selection.getContent();
@@ -715,6 +715,7 @@
                     //设置宽高
                     this.setSize();
                     isfirstTargetHandle = false;
+                   // component.show($editnote);
                 },
                 //隐藏
                 hide: function (pararm) {
@@ -728,7 +729,7 @@
                     if (pararm === 'delete') {
                         msg = '删除成功!';
                     }
-                    uikitextend.uikit.notify({ message: msg,status:'success'});
+                    uikitextend.uikit.notify({ message: msg, status: 'success' });
                 },
                 //临时行
                 temprow: {
@@ -848,7 +849,7 @@
                         clean();
                         //添加dom
                         $cropwrap.append(sidebar.node.get());
-                        //        $cropwrap.append(getLinkArea());
+
                         isnewselected = false;
 
                         //删除Note
@@ -937,7 +938,8 @@
                                     $link.val('http://');
                                 }
                             }
-                            else if (linkval === 'button') {
+                            else
+                            if (linkval === 'button') {
                                 html = component.button;
                             }
                         }

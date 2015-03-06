@@ -1,4 +1,16 @@
-﻿define(function () {
+﻿require.config({
+    paths: {
+        jquery: '../../lib/jquery-1.11.1.min',
+        utils: '../component/utils'
+    },
+    shim: {
+        utils: ['jquery'],
+        "spin": ['jquery']
+    },
+
+    waitSeconds: 200
+});
+define(['jquery', '../component/utils'], function ($, utils) {
     var html = "<span>";
     html += '<input id="type0" value="_self" type="radio" name="radio">';
     html += '<label for="type0">当前窗口</label>';
@@ -7,11 +19,23 @@
     html += '<input id="type1" checked="checked" value="_blank" type="radio" name="radio">';
     html += '<label for="type1">新建窗口</label>';
     html += '</span>';
-    
+   
     var exports = {
         html: html,
-        callback: function () {
-
+        init: function () {
+            var opts = {
+                lable: '设定',
+                callback: function () {
+                    return '<label><input type="checkbox" class="linkicon"> 该链接是否显根据库存数等条件示"售罄"类图标</label>';
+                }
+            }
+            $('.btngroup').before(utils.tempRow(opts));
+            $('.linkicon').off('click').on('click', function() {
+                alert('111111111');
+            });
+        },
+        show: function() {
+            alert('asdfffff');
         }
     }
     return exports;
