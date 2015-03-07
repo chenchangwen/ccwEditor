@@ -1,5 +1,5 @@
 ﻿require(['../core/config'], function() {
-    require(["jquery", "utils", 'uikit', 'uikit!upload'], function ($, utils, UI) {
+    require(["jquery", 'uikit', 'uikitextend', 'uikit!upload'], function ($, UI, uikitextend) {
         var editor = parent.tinymce.activeEditor,
             editorimg = $(editor.selection.getNode()),
             $width = $("#width"),
@@ -26,7 +26,7 @@
                 var pattern = /^[0-9]*[1-9][0-9]*$/;
                 if ($width.val() != "0") {
                     if (!pattern.test($width.val())) {
-                        utils.notify({ message: "宽度:请输入正确的数字!" });
+                        uikitextend.notify({ message: "宽度:请输入正确的数字!" });
                         return false;
                     }
                     //style += " width='" + $width.val() + "'";
@@ -34,7 +34,7 @@
                 }
                 if ($height.val() != "0") {
                     if (!pattern.test($height.val())) {
-                        utils.notify({ message: "高度:请输入正确的数字!" });
+                        uikitextend.notify({ message: "高度:请输入正确的数字!" });
                         return false;
                     }
                     //style += " height='" + $height.val() + "'";
@@ -120,20 +120,15 @@
                         bar.css("width", percent + "%").text(percent + "%");
                     },
                     allcomplete: function (response) {
-                        if (response != "error") {
+                        response = JSON.parse(response);
+                        if (response.status ==="1") {
                             bar.css("width", "100%").text("100%");
                             setTimeout(function () {
                                 progressbar.addClass("uk-hidden");
                             }, 250);
-
-                            save(response);
+                            save(response.msg);
                         } else {
-                            utils.notify({
-                                message: "上传失败!",
-                                status: "danger",
-                                timeout: 5000,
-                                pos: "top-center"
-                            });
+                            uikitextend.uikit.notify({ message: response.msg || '上传失败!' });
                         }
                     }
                 };

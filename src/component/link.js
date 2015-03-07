@@ -30,12 +30,21 @@ define(['jquery', '../component/utils'], function ($, utils) {
                 }
             }
             $('.btngroup').before(utils.tempRow(opts));
-            $('.linkicon').off('click').on('click', function() {
-                alert('111111111');
-            });
         },
-        show: function() {
-            alert('asdfffff');
+        show: function (el) {
+            if(el!=undefined)
+            if (el.attr('linkicon') != undefined) {
+                $('.linkicon').prop("checked", "checked");
+            }
+        },
+        save: function (el) {
+            if (el != undefined) {
+                if ($(".linkicon").prop("checked")) {
+                    el.attr('linkicon', 'true');
+                } else {
+                    el.removeAttr('linkicon');
+                }
+            }
         }
     }
     return exports;

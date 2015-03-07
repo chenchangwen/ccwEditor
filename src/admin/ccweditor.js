@@ -461,8 +461,8 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             editor.on("init", function () {
                 ccweditor.format();
                 //测试用
-                editor.setContent('');
-                 editor.insertContent('<img usemap="mymap" src="http://localhost:1617/images/test.jpg?123" />');
+//                editor.setContent('');
+//                editor.insertContent('<img usemap="mymap" src="'+tinymcepath+ '/images/test.jpg?123" />');
                 tinymce.activeEditor.transitionPic = [];
             });
 

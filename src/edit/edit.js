@@ -715,7 +715,7 @@
                     //设置宽高
                     this.setSize();
                     isfirstTargetHandle = false;
-                   // component.show($editnote);
+                    component.show($editnote);
                 },
                 //隐藏
                 hide: function (pararm) {
@@ -730,6 +730,7 @@
                         msg = '删除成功!';
                     }
                     uikitextend.uikit.notify({ message: msg, status: 'success' });
+                    component.save($cropwrap.children('.imgpos').last());
                 },
                 //临时行
                 temprow: {
@@ -748,7 +749,7 @@
                     if ($editnote != null) {
                         if ($linktarget.text() === '没有锚点') {
                             uikitextend.uikit.notify({ message: "没有锚点,保存失败!" });
-                            return 3;
+                            return false;
                         }
                         else
                         if ($baritem1.is(":hidden")) {
@@ -830,6 +831,7 @@
                         $(".imgpos:last").trigger("dblclick");
                     });
 
+                    //保存热点
                     $("#savehotlink").on("click", function () {
                         var valid = sidebar.validCheck();
                         if (valid === false) {
@@ -945,7 +947,7 @@
                         }
                         if ($.isPlainObject(html)) {
                             $linktarget.html(html.html);
-                            utils.callAllFn(html, 'html');
+                            html.init();
                         } else {
                             $linktarget.html(html);
                         }
