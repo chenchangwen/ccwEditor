@@ -26,7 +26,7 @@
                 var pattern = /^[0-9]*[1-9][0-9]*$/;
                 if ($width.val() != "0") {
                     if (!pattern.test($width.val())) {
-                        uikitextend.notify({ message: "宽度:请输入正确的数字!" });
+                        uikitextend.uikit.notify({ message: "宽度:请输入正确的数字!" });
                         return false;
                     }
                     //style += " width='" + $width.val() + "'";
@@ -34,7 +34,7 @@
                 }
                 if ($height.val() != "0") {
                     if (!pattern.test($height.val())) {
-                        uikitextend.notify({ message: "高度:请输入正确的数字!" });
+                        uikitextend.uikit.notify({ message: "高度:请输入正确的数字!" });
                         return false;
                     }
                     //style += " height='" + $height.val() + "'";
@@ -47,8 +47,8 @@
             if (editor.selection.getNode().tagName === "IMG") {
                 cloneimg = mcequery(editor.selection.getNode());
                 cloneimg.attr("src", imgsrc).attr("data-mce-src", imgsrc);
-                cloneimg.css("width", width || "");
-                cloneimg.css("height", height || "");
+                cloneimg.attr("width", width || "");
+                cloneimg.attr("height", height || "");
             } else {
                 imgstr += " src=\"" + imgsrc + "\" data-mce-src=\"" + imgsrc + "\"";
                 var str = "<img style=\"display:block\"" + imgstr + style + "/>";

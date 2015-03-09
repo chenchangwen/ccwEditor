@@ -856,7 +856,7 @@
 
                         //删除Note
                         sidebar.node.remove();
-                        $("img").css("border", "0");
+                        $img.css("border", "0").css('width','').css('height','');
                         fixArea(true);
                         isfirstTargetHandle = true;
                     });

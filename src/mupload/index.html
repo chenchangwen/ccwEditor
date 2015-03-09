@@ -15,10 +15,7 @@
             $(function () {
                 var myDropzone = new Dropzone("#my-dropzone", {
                     acceptedFiles: ".png,.jpg",
-                    dictInvalidFileType: '上传失败!只可以上传.png|.jpg文件.',
-                    error: function() {
-                        alert(213123)
-                    }
+                    dictInvalidFileType: '上传失败!只可以上传.png|.jpg文件.'
                 });
 
                 myDropzone.on("success", function (file) {

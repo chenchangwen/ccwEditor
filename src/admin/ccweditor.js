@@ -345,7 +345,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                 }
                 $jqel.removeAttr(usemap).removeAttr('id');
                 //重置宽高,避免因父元素而看不到图片
-                $jqel.attr({ 'width': $jqel.width(), 'heigth': $jqel.height() });
+                //$jqel.attr({ 'width': $jqel.width(), 'heigth': $jqel.height() });
             }
             //div.cropwrap
             else if ($jqel.hasClass(cropwrap)) {
@@ -460,10 +460,17 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
         setup: function (editor) {
             editor.on("init", function () {
                 ccweditor.format();
-                //测试用
+//                //测试用
 //                editor.setContent('');
 //                editor.insertContent('<img usemap="mymap" src="'+tinymcepath+ '/images/test.jpg?123" />');
+
                 tinymce.activeEditor.transitionPic = [];
+                mcequery(editor.dom.select(img)).each(function () {
+                    var $this = $jq(this);
+                    $this.attr('src', $this.attr('src')).load(function () {
+                        $(this).css('display', 'block');
+                    });
+                });
             });
 
             editor.addButton("btninsertimage", {
@@ -699,5 +706,4 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             this.submit();
         });
     });
-
 });
