@@ -7,13 +7,17 @@
         component: '../component/all',
         jqextend: '../core/jqextend',
         uikitextend: '../core/uikitextend',
-        utils: '../core/utils'
+        utils: '../core/utils',
+        'uikit!upload':'uikit!upload'
     },
     shim: {
         jqextend: ['jquery'],
         uikitextend: ['jquery'],
         utils: ['jquery'],
-        "spin": ['jquery']
+        "spin": ['jquery'],
+        Jcrop: ['jquery'],
+        "uikit": ['jquery'],
+        "uikit!upload": ['jquery']
     },
     config: {
         "uikit": {

@@ -605,9 +605,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             });
 
             editor.on("dblclick", function (e) {
-                if (e.target.tagName === "IMG" || e.target.tagName === "A") {
-                    ccweditor.editimage();
-                }
+                ccweditor.editimage();
             });
 
             editor.on("keydown", function (e) {

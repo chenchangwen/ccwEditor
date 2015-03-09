@@ -4,10 +4,8 @@
         utils: '../component/utils'
     },
     shim: {
-        utils: ['jquery'],
-        "spin": ['jquery']
+        utils: ['jquery']
     },
-
     waitSeconds: 200
 });
 define(['jquery', '../component/utils'], function ($, utils) {
