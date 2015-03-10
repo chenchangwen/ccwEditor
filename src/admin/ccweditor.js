@@ -96,8 +96,8 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
 
         borderstyle = "2px solid blue";
 
-        
-        
+
+
 
     var ccweditor = {
         template: {
@@ -125,7 +125,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             }
             tinymce.activeEditor.windowManager.open({
                 title: zhTitle1,
-                url: tinymcepath + "src/upload/index.html?20152121940",
+                url: tinymcepath + "src/upload/index.html?2015310",
                 width: 450,
                 height: 250,
                 buttons: [
@@ -142,7 +142,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     h = (document.all ? document.getElementsByTagName("html")[0].offsetHeight : window.innerHeight) - 100;
                 tinymce.activeEditor.windowManager.open({
                     title: zhTitle5,
-                    url: tinymcepath + "src/edit/index.html?20152121940",
+                    url: tinymcepath + "src/edit/index.html?2015310",
                     width: w,
                     height: h
                 });
@@ -189,7 +189,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             for (var key in attribute) {
                 var value = attribute[key];
                 if (key !== contenteditable) {
-                    if (typeof toelement == "string" ) {
+                    if (typeof toelement == "string") {
                         content += key + "=\"" + value + "\"";
                     } else {
                         toelement.attr(key, value);
@@ -232,7 +232,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             }
         },
         //格式化编辑器
-        format: function() {
+        format: function () {
             var i;
             var convertbatch = function (selector, callback) {
                 var el;
@@ -245,7 +245,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             }
             var editor = tinymce.activeEditor;
             //清除br
-            convertbatch(editor.dom.select(br), function(el) {
+            convertbatch(editor.dom.select(br), function (el) {
                 editor.dom.remove(el);
             });
 
@@ -255,12 +255,12 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             });
 
             //将.cropwrap有map的转换为a(早些版本是map为主)
-            convertbatch(editor.dom.select(classcropwrap), function(el) {
+            convertbatch(editor.dom.select(classcropwrap), function (el) {
                 ccweditor.convert(el);
             });
 
             //将img关联的map转换为a
-            convertbatch(editor.dom.select(img), function(el) {
+            convertbatch(editor.dom.select(img), function (el) {
                 ccweditor.convert(el);
             });
 
@@ -293,7 +293,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             });
 
         },
-        foreach: function(selector, callback) {
+        foreach: function (selector, callback) {
             var el;
             for (var i = 0, len = selector.length; i < len; i++) {
                 el = selector[i];
@@ -316,14 +316,14 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     $jqel.removeClass(usemap).addClass(cropwrap).removeAttr('id');
                 }
             }
-            //img
+                //img
             else if ($jqel[0].tagName === "IMG") {
                 var mark = ($jqel.attr(usemap) || '').replace(/#/g, '');
                 if (mark !== '') {
                     $jqmap = tinymce.activeEditor.dom.select("#" + mark);
                     if ($jqmap.length === 0) {
                         //尝试取得name
-                        $jqmap=tinymce.activeEditor.dom.select('map[name="' + mark + '"]');
+                        $jqmap = tinymce.activeEditor.dom.select('map[name="' + mark + '"]');
                     }
                     $jqchildren = mcequery($jqmap).children('area');
                     //如果有area
@@ -332,7 +332,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                         mcequery($jqmap).append($jqel);
                         mcequery($jqmap).wrap(ccweditor.template.cropwrap());
                         $jqchildren.unwrap();
-                        $jqchildren.each(function() {
+                        $jqchildren.each(function () {
                             var $jqthis = $jq(this);
                             //将area转换成a
                             ccweditor.setAttributes($jqthis, a);
@@ -347,7 +347,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                 //重置宽高,避免因父元素而看不到图片
                 //$jqel.attr({ 'width': $jqel.width(), 'heigth': $jqel.height() });
             }
-            //div.cropwrap
+                //div.cropwrap
             else if ($jqel.hasClass(cropwrap)) {
                 var $jqimg = $jqel.children(img);
                 $jqmap = $jqel.children("map");
@@ -370,7 +370,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     }
                 });
             }
-            //a
+                //a
             else if ($jqel[0].tagName === "A") {
                 var data = $jqel.attr("data");
                 if (data != undefined) {
@@ -460,9 +460,9 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
         setup: function (editor) {
             editor.on("init", function () {
                 ccweditor.format();
-//                //测试用
-//                editor.setContent('');
-//                editor.insertContent('<img usemap="mymap" src="'+tinymcepath+ '/images/test.jpg?123" />');
+                //                //测试用
+                //                editor.setContent('');
+                //                editor.insertContent('<img usemap="mymap" src="'+tinymcepath+ '/images/test.jpg?123" />');
 
                 tinymce.activeEditor.transitionPic = [];
                 mcequery(editor.dom.select(img)).each(function () {
@@ -492,7 +492,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     tinymce.activeEditor.windowManager.open({
                         title: zhTip2,
                         //url: tinymcepath + 'lib/tinymce/js/tinymce/plugins/filemanager/dialog.php?type=1&lang=zh_CN',
-                        url: tinymcepath + "src/mupload/index.html?20152121940",
+                        url: tinymcepath + "src/mupload/index.html?2015310",
                         width: 750,
                         height: 326,
                         buttons: [
@@ -517,7 +517,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                 icon: "btnpreview",
                 tooltip: zhTip4,
                 onclick: function () {
-                    window.open(tinymcepath + "src/preview/index.html?20152121940");
+                    window.open(tinymcepath + "src/preview/index.html?2015310");
                 }
             });
 
@@ -533,7 +533,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                 icon: "btndocument",
                 tooltip: zhTip6,
                 onclick: function () {
-                    window.open(tinymcepath + "src/document/index.html?20152121940");
+                    window.open(tinymcepath + "src/document/index.html?2015310");
                 }
             });
 
@@ -593,25 +593,11 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                 });
             }
 
-            editor.on("click", function (e) {
-                if (e.target.tagName === "A" || e.target.tagName ==='DIV') {
-                    var selection = tinymce.activeEditor.selection;
-                    var currentNode = selection.getNode();
-                    var parentNode = currentNode.parentNode;
-                    var node;
-                    if (mcequery(currentNode).hasClass(cropwrap)) {
-                        node = currentNode;
-                    }
-                    if (mcequery(parentNode).hasClass(cropwrap)) {
-                        node = parentNode;
-                    }
-                    tinyMCE.activeEditor.selection.select(mcequery(node).find('img')[0]);
-                    e.preventDefault();
-                }
-
-            });
-
             editor.on("dblclick", function (e) {
+                if (e.target.tagName === 'A') {
+                    var nodeimg = mcequery(e.target.parentNode).find('img')[0];
+                    tinyMCE.activeEditor.selection.select(nodeimg);
+                }
                 ccweditor.editimage();
             });
 
@@ -667,7 +653,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             editor.addMenuItem("preview", {
                 text: zhTip4,
                 onclick: function () {
-                    window.open(tinymcepath + "src/preview/index.html?20152121940");
+                    window.open(tinymcepath + "src/preview/index.html?2015310");
                 }
             });
 
@@ -685,9 +671,10 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
     }
 
     function isValidCheck() {
-        $jq("body").focus();
+        //$jq("body").focus();
+        //tinyMCE.activeEditor.selection.select(mcequery(node).find('img')[0]);
+        
         //如果父元素有cropwrap则还是选择图片
-       
         if (tinymce.activeEditor.selection.getNode().tagName !== "IMG") {
             alert("请选择图片");
             return false;

@@ -1,5 +1,5 @@
-﻿require(['../core/config'], function() {
-    require(['jquery', 'Jcrop', 'utils', 'component', 'spin', 'uikitextend','../component/utils'], function ($, Jcrop, utils, component, Spinner, uikitextend) {
+﻿require(['../core/config'], function () {
+    require(['jquery', 'Jcrop', 'utils', 'component', 'spin', 'uikitextend', '../component/utils'], function ($, Jcrop, utils, component, Spinner, uikitextend) {
         $(document).ready(function () {
             //变量声明
             //链接类型对象
@@ -595,9 +595,6 @@
                             //原始宽高定义, 修正jcrop 1px的bug
                             orignwidth = c.w;
                             orginheight = c.h;
-                            //                          console.log('orignwidth:' + orignwidth + 'jcrophheigth:' + jcrophheigth);
-                            //                          console.log('orignwidth:' + orignwidth + 'jcrophheigth:' + jcrophheigth);
-
                             //jcrop宽高与原始宽高对比, 处理jcrop 1px的bug
                             if (jcrophwidth < orignwidth) {
                                 jcrophwidth = jcrophwidth + (orignwidth - jcrophwidth);
@@ -644,7 +641,7 @@
             }
 
             var content = {
-                init: function() {
+                init: function () {
                     $content.on("click", function (e) {
                         e.stopPropagation();
                         e.preventDefault();
@@ -688,7 +685,7 @@
                         if (isactivebtnhidden) {
                             $sidebar.css("transform", "translateX(100%)");
                             $floatbtn.css({ "transform": "rotate(0deg)", 'visibility': 'visible' });
-                           
+
                         }
                         else {
                             $sidebar.css("transform", "translateX(-10px)");
@@ -702,7 +699,7 @@
 
                     $floatbtn.css({ "transform": "rotate(720deg)", 'visibility': 'hidden' });
                     isactivebtnhidden = true;
-                    //载入已有值,
+
                     sidebar.temprow.remove();
                     $link.val($editnote.attr("href"));
                     $linktype.find("option[value='" + $editnote.attr("linktype") + "']").prop("selected", "selected").trigger("change");
@@ -745,25 +742,25 @@
                     }
                 },
                 //验证
-                validCheck: function() {
+                validCheck: function () {
                     if ($editnote != null) {
                         if ($linktarget.text() === '没有锚点') {
                             uikitextend.uikit.notify({ message: "没有锚点,保存失败!" });
                             return false;
                         }
                         else
-                        if ($baritem1.is(":hidden")) {
-                            var re = new RegExp(component.regexp.url, "ig");
-                            if ($linktype.val() == 'link') {
-                                if (!re.test($link.val())) {
-                                    uikitextend.uikit.notify({ message: "请输入正确的链接地址!" });
-                                    return false;
+                            if ($baritem1.is(":hidden")) {
+                                var re = new RegExp(component.regexp.url, "ig");
+                                if ($linktype.val() == 'link') {
+                                    if (!re.test($link.val())) {
+                                        uikitextend.uikit.notify({ message: "请输入正确的链接地址!" });
+                                        return false;
+                                    }
                                 }
+                                return 1;
+                            } else {
+                                return 2;
                             }
-                            return 1;
-                        } else {
-                            return 2;
-                        }
                     }
                     return 3;
                 },
@@ -775,7 +772,7 @@
                             sidebar.show(1);
                         } else {
                             sidebar.show(0);
-                        }  
+                        }
                     });
 
                     $("#btnbar").delegate('li', 'click', function () {
@@ -823,9 +820,21 @@
                         }
                     });
 
+                    $("#close").on("click", function () {
+                        if (typeof (jcrop_api) != "undefined") {
+                            jcrop_api.release();
+                            jcrop_api.destroy();
+                            delete jcrop_api;
+                            $editnote.css("border", "2px solid blue");
+                            $editnote = null;
+                            isnewselected = false;
+//                            sidebar.hide();
+                        }
+                    });
+
                     $("#addhotlink").on("click", function () {
+                        $("#close").trigger("click");
                         loadJcrop();
-//                        $("#close").trigger("click");
                         reScroll();
                         $("#savehotlink").trigger("click");
                         $(".imgpos:last").trigger("dblclick");
@@ -856,7 +865,7 @@
 
                         //删除Note
                         sidebar.node.remove();
-                        $img.css("border", "0").css('width','').css('height','');
+                        $img.css("border", "0").css('width', '').css('height', '');
                         fixArea(true);
                         isfirstTargetHandle = true;
                     });
@@ -941,9 +950,9 @@
                                 }
                             }
                             else
-                            if (linkval === 'button') {
-                                html = component.button;
-                            }
+                                if (linkval === 'button') {
+                                    html = component.button;
+                                }
                         }
                         if ($.isPlainObject(html)) {
                             $linktarget.html(html.html);
@@ -969,14 +978,14 @@
                 },
 
                 //加载时间
-                loadDate: function() {
+                loadDate: function () {
                     var startdate = $img.attr("startdate");
                     var enddate = $img.attr("enddate");
                     $startdate.val(startdate);
                     $enddate.val(enddate);
                 },
 
-                setSize: function() {
+                setSize: function () {
                     $("#width").val(imgpos.w);
                     $("#height").val(imgpos.h);
                     $("#marginleft").val(imgpos.x);
@@ -1043,7 +1052,7 @@
                         html += "</" + wraptag + ">";
                         return html;
                     },
-                    getIndex: function() {
+                    getIndex: function () {
                         var $imgpos = $(".imgpos");
                         for (var i = 0; i < $imgpos.length; i++) {
                             if ($editnote.attr("style") == $imgpos.eq(i).attr("style")) {
@@ -1052,7 +1061,7 @@
                         }
                         return 0;
                     },
-                    remove: function(pararm) {
+                    remove: function (pararm) {
                         //如果编辑对象不为null,则删除当前编辑的对象
                         if ($editnote != null) {
                             $editnote.remove();

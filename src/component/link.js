@@ -24,7 +24,7 @@ define(['jquery', '../component/utils'], function ($, utils) {
             var opts = {
                 lable: '设定',
                 callback: function () {
-                    return '<label><input type="checkbox" class="linkicon"> 该链接是否显根据库存数等条件示"售罄"类图标</label>';
+                    return '<label><input type="checkbox" class="linkicon"> 不显示"售罄"类图标</label>';
                 }
             }
             $('.btngroup').before(utils.tempRow(opts));
