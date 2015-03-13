@@ -265,13 +265,16 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             });
 
             //还原border,及超链接,及锚点
-            convertbatch(editor.dom.select(a), function (el) {
+            convertbatch(editor.dom.select('a,div'), function (el) {
                 ccweditor.convert(el);
                 var querya = mcequery(el);
                 if (!editor.dom.hasClass(el, "tempanchor") && querya.children(img).length <= 0)
                     editor.dom.setStyle(el, "border", borderstyle);
                 editor.dom.setAttrib(el, contenteditable, "false");
             });
+
+
+
             //修正图片在div.cropwrap的位置
             convertbatch(editor.dom.select(img), function (el) {
                 if (mcequery(el).parent().hasClass(cropwrap)) {
@@ -465,10 +468,14 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                 //                editor.insertContent('<img usemap="mymap" src="'+tinymcepath+ '/images/test.jpg?123" />');
 
                 tinymce.activeEditor.transitionPic = [];
+                
+            });
+
+            editor.on('loadContent', function() {
                 mcequery(editor.dom.select(img)).each(function () {
                     var $this = $jq(this);
                     $this.attr('src', $this.attr('src')).load(function () {
-                        $(this).css('display', 'block');
+                        $this.css('display', 'block');
                     });
                 });
             });
@@ -593,8 +600,28 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                 });
             }
 
+            editor.on("click", function (e) {
+                var tagName = e.target.tagName;
+                var node;
+                if (tagName === 'A') {
+                    node = mcequery(e.target.parentNode).find('img')[0];
+                    tinyMCE.activeEditor.selection.select(node);
+                    //禁止点击了A打开超链接
+                    e.preventDefault();
+                }
+                else
+                if (tagName === 'IMG') {
+                    node = mcequery(e.target).find('img')[0];
+                    tinyMCE.activeEditor.selection.select(node);
+                }
+            });
+
             editor.on("dblclick", function (e) {
-                if (e.target.tagName === 'A') {
+                var tagName = e.target.tagName;
+                if (tagName === 'IMG') {
+                    tinyMCE.activeEditor.selection.select(e.target);
+                }
+                else if (tagName === 'A' || tagName === 'DIV') {
                     var nodeimg = mcequery(e.target.parentNode).find('img')[0];
                     tinyMCE.activeEditor.selection.select(nodeimg);
                 }
@@ -671,9 +698,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
     }
 
     function isValidCheck() {
-        //$jq("body").focus();
-        //tinyMCE.activeEditor.selection.select(mcequery(node).find('img')[0]);
-        
+        //$jq("body").focus();        
         //如果父元素有cropwrap则还是选择图片
         if (tinymce.activeEditor.selection.getNode().tagName !== "IMG") {
             alert("请选择图片");

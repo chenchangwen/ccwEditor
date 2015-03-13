@@ -820,7 +820,19 @@
                         }
                     });
 
-                    $("#close").on("click", function () {
+//                    $("#close").on("click", function () {
+//                        if (typeof (jcrop_api) != "undefined") {
+//                            jcrop_api.release();
+//                            jcrop_api.destroy();
+//                            delete jcrop_api;
+//                            $editnote.css("border", "2px solid blue");
+//                            $editnote = null;
+//                            isnewselected = false;
+////                            sidebar.hide();
+//                        }
+//                    });
+
+                    $("#addhotlink").on("click", function () {
                         if (typeof (jcrop_api) != "undefined") {
                             jcrop_api.release();
                             jcrop_api.destroy();
@@ -828,12 +840,7 @@
                             $editnote.css("border", "2px solid blue");
                             $editnote = null;
                             isnewselected = false;
-//                            sidebar.hide();
                         }
-                    });
-
-                    $("#addhotlink").on("click", function () {
-                        $("#close").trigger("click");
                         loadJcrop();
                         reScroll();
                         $("#savehotlink").trigger("click");
