@@ -265,15 +265,18 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             });
 
             //还原border,及超链接,及锚点
-            convertbatch(editor.dom.select('a,div'), function (el) {
-                ccweditor.convert(el);
-                var querya = mcequery(el);
-                if (!editor.dom.hasClass(el, "tempanchor") && querya.children(img).length <= 0)
-                    editor.dom.setStyle(el, "border", borderstyle);
-                editor.dom.setAttrib(el, contenteditable, "false");
-            });
-
-
+            var restore= function(tag) {
+                convertbatch(editor.dom.select(tag), function (el) {
+                    ccweditor.convert(el);
+                    var querya = mcequery(el);
+                    if (!editor.dom.hasClass(el, "tempanchor") && querya.children(img).length <= 0) {
+                        editor.dom.setStyle(el, "border", borderstyle);
+                    }
+                    editor.dom.setAttrib(el, contenteditable, "false");
+                });
+            }
+            restore(a);
+            restore(div);
 
             //修正图片在div.cropwrap的位置
             convertbatch(editor.dom.select(img), function (el) {
@@ -468,17 +471,17 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                 //                editor.insertContent('<img usemap="mymap" src="'+tinymcepath+ '/images/test.jpg?123" />');
 
                 tinymce.activeEditor.transitionPic = [];
-                
-            });
-
-            editor.on('loadContent', function() {
                 mcequery(editor.dom.select(img)).each(function () {
                     var $this = $jq(this);
+//                    console.log($this.width()); console.log($this.height());
+
                     $this.attr('src', $this.attr('src')).load(function () {
-                        $this.css('display', 'block');
+                        $this.css('display', 'block').css('visibility', '');
                     });
                 });
             });
+       
+       
 
             editor.addButton("btninsertimage", {
                 icon: "btninsertimage",
@@ -618,7 +621,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
 
             editor.on("dblclick", function (e) {
                 var tagName = e.target.tagName;
-                if (tagName === 'IMG') {
+                if (tagName === 'IMG' ) {
                     tinyMCE.activeEditor.selection.select(e.target);
                 }
                 else if (tagName === 'A' || tagName === 'DIV') {
@@ -700,7 +703,12 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
     function isValidCheck() {
         //$jq("body").focus();        
         //如果父元素有cropwrap则还是选择图片
-        if (tinymce.activeEditor.selection.getNode().tagName !== "IMG") {
+        var node = tinymce.activeEditor.selection.getNode();
+        if (node.tagName === 'DIV') {
+            var nodeimg = mcequery(node.parentNode).find('img')[0];
+            tinyMCE.activeEditor.selection.select(nodeimg);
+        }
+        if (tinymce.activeEditor.selection.getNode().tagName !== 'IMG') {
             alert("请选择图片");
             return false;
         }

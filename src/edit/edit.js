@@ -1011,7 +1011,7 @@
                         var wraptag = linktype === 'countdown' ? 'div' : 'a';
                         var imgposposition = "left:" + left + "px;top:" + top + "px;width:" + width + "px;height:" + (imgpos.h - 6) + "px;";
                         var html =
-                            "<" + wraptag + " contenteditable=\"false\" class=\"imgpos\" style=\"background:url(#);position:absolute;border:2px solid blue;" + imgposposition + "\"";
+                            "<" + wraptag + " contenteditable=\"false\" class=\"imgpos\" style=\"position:absolute;border:2px solid blue;" + imgposposition + "\"";
 
                         if (linktype === 'link') {
                             html += " href=\"" + $link.val() + "\"";
