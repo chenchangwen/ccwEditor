@@ -15,8 +15,8 @@ $(document).ready(function () {
             ajax: 1
         };
         var len = data.length <= maxlen ? data.length : maxlen;
-        for (var i = 1; i < len; i++) {
-            query['cid' + i] = data[i-1];
+        for (var i = 1; i <= len; i++) {
+            query['cid' + i] = data[i - 1];
         }
         $.ajax({
             url: AJAX_URL,
@@ -115,8 +115,10 @@ $(document).ready(function () {
             str = str.match(/goods-\d+/);
             if (str != null) {
                 str = str.toString().match(/\d+/);
-                if (str != null) {
-                    goodIdAry.push(str);
+                if ($this.attr('linkicon') == undefined) {
+                    if (str != null) {
+                        goodIdAry.push(str);
+                    }
                 }
             }
         }
@@ -157,13 +159,14 @@ $(document).ready(function () {
                 cdsuffix = $this.attr('cdsuffix');
             //替换'-'为能被Date对象所处理的字符串
             date = $this.data('id') == undefined ? '0' : $this.data('id').replace(/-/ig, '/');
-            if (linktarget == '时间循环') {
+            if (linktarget === '2' || linktarget === '时间循环') {
                 cycleTimeEnd = date.split(',');
-            } else if (linktarget == '距离开始时间') {
+            } else if (linktarget === '0' || linktarget === '距离开始时间') {
                 timeEnd = startdate;
-            } else if (linktarget == '距离结束时间') {
+            } else if (linktarget === '1' || linktarget === '距离结束时间') {
                 timeEnd = enddate;
             }
+
             var style = $this.attr('style') + fontstyle;
             $this.attr('style', style);
             if ($this.css('font-size') != '') {

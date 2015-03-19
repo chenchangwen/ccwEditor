@@ -2,14 +2,16 @@
     paths: {
         link: "../component/link",
         button: "../component/button",
-        regexp: "../component/regexp"
+        regexp: "../component/regexp",
+        countdown: "../component/countdown"
     }
 });
-define(["link", "button", "regexp"], function (ccwlink, ccwbutton, ccwregexp) {
+define(["link", "button", "regexp", "countdown"], function (ccwlink, ccwbutton, ccwregexp, ccwcountdown) {
     var exports = {
         link: ccwlink,
         button: ccwbutton,
         regexp: ccwregexp,
+        countdown:ccwcountdown,
         show: function (el) {
             callFn('show',el);
         },

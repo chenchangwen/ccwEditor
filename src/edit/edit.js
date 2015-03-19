@@ -7,7 +7,8 @@
                 link: [],
                 button: ["youhui", "login"],
                 anchor: [],
-                countdown: ["距离开始时间", "距离结束时间", "时间循环", "先开始后结束"]
+                countdown: ["0", "1", "2", "3"]
+//                countdown: ["距离开始时间", "距离结束时间", "时间循环", "先开始后结束"]
             };
             //带有$+变量名,均为jquery对象
             var editor = parent.tinymce.activeEditor,
@@ -912,8 +913,6 @@
                         } else {
                             $("#linkwrap").show();
                         }
-                        //触发函数(针对倒计时子元素超过1)
-                        var triggerFn = "";
 
                         //如果是锚点(读取并生成锚点)
                         if (linkval == "anchor") {
@@ -935,40 +934,23 @@
                                 });
                             }
                         }
-                            //如果是倒计时
-                        else if (linkval == "countdown") {
-                            html = getTempRowHtml(function () {
-                                for (var i = 0; i < linkvalue.length; i++) {
-                                    html += "<option value=\"" + linkvalue[i] + "\">" + linkvalue[i] + "</option>";
-                                }
-                                return html;
-                            }, "select");
-
-                            triggerFn = function () {
-                                if ($(".temprow").length == 1) {
-                                    $(".temprow").find("select").children("option").eq(0).prop("selected", "selected").trigger("click");
-                                }
-                            };
-                        } else {
+                        else {
                             if (linkval === 'link') {
                                 html = component.link;
                                 if ($link.val() === '') {
                                     $link.val('http://');
                                 }
+                            } else if (linkval === 'button') {
+                                html = component.button;
+                            } else if (linkval === 'countdown') {
+                                html = component.countdown;
                             }
-                            else
-                                if (linkval === 'button') {
-                                    html = component.button;
-                                }
                         }
                         if ($.isPlainObject(html)) {
                             $linktarget.html(html.html);
                             html.init();
                         } else {
                             $linktarget.html(html);
-                        }
-                        if (typeof triggerFn == "function") {
-                            triggerFn();
                         }
                     });
 

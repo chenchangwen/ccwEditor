@@ -476,7 +476,9 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
 //                    console.log($this.width()); console.log($this.height());
 
                     $this.attr('src', $this.attr('src')).load(function () {
+                        $this.css('width', $this.width()).css('height', $this.height());
                         $this.css('display', 'block').css('visibility', '');
+                        $this.css('width', '').css('height', '');
                     });
                 });
             });
