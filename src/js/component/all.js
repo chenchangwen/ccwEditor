@@ -1,10 +1,10 @@
 ﻿require.config({
     paths: {
-        link: "src/js/component/link",
-        button: "src/js/component/button",
-        regexp: "src/js/component/regexp",
-        countdown: "src/js/component/countdown",
-        componentutils: 'src/js/component/utils'
+        link: "../component/link",
+        button: "../component/button",
+        regexp: "../component/regexp",
+        countdown: "../component/countdown",
+        componentutils: "../component/utils"
     }
 });
 define(["link", "button", "regexp", "countdown"], function (ccwlink, ccwbutton, ccwregexp, ccwcountdown) {
@@ -20,7 +20,7 @@ define(["link", "button", "regexp", "countdown"], function (ccwlink, ccwbutton, 
             callFn('save',el);
         }
     };
-
+    
     function callFn(fnname, el) {
         for (var pfn in exports) {
             if (pfn !== 'show' && pfn !== 'save') {

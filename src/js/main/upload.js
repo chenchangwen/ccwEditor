@@ -56,7 +56,7 @@
                 var el, insertnode;
                 //如果当前编辑器没有选择任何焦点
                 if (editor.selection.getSel() == null) {
-                    parent.tinymce.get(parent.tinymce.activeEditor.id).execCommand("mceInsertContent", false, contentp);
+                    parent.tinymce.editors[editor.fsindex].execCommand("mceInsertContent", false, contentp);
                 } else {
                     var focusNode = editor.selection.getSel().focusNode;
                     var selectNode = editor.selection.getNode();
@@ -71,7 +71,7 @@
                         }
                         editor.dom.insertAfter(el, insertnode);
                     } else if (focusNode.tagName === "P" || selectNode.tagName === "P" || selectNode.tagName === "BODY") {
-                        parent.tinymce.get(parent.tinymce.activeEditor.id).execCommand("mceInsertContent", false, contentp);
+                        parent.tinymce.editors[editor.fsindex].execCommand("mceInsertContent", false, contentp);
                     }
                         //如果当前是一个P,并且没有图片,并且父亲是一个BODY
                     else if (focusNode.tagName === "P") {
