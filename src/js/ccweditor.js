@@ -48,8 +48,6 @@ require.config({
     }
 });
 require(["jquery", "utils", "tinymce"], function ($, utils) {
-    //alert($(location).attr('href'))
-    debugger;
         var $jq = $.noConflict(true);
         var cropwrap = "cropwrap",
             imgpos = "imgpos",
