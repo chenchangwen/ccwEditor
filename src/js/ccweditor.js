@@ -37,7 +37,8 @@
     };
 }(window));
 //tinymce路径
-var tinymcepath = getCurrAbsPath().replace(/src\/.+/, "");
+var tinymcepath = getCurrAbsPath().replace(/src\/.+/, ""),
+    mceindex = 0;
 require.config({
     paths: {
         jquery: '../../vendor/jquery.min',
@@ -431,12 +432,12 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                 }
             }
         }
-
+        
         tinymce.init({
             selector: ".ccweditor",
             theme: "modern",
             width: "100%",
-            height: 500,
+            height: 100,
             cleanup: true,
             object_resizing: false,
             plugins: [
@@ -450,27 +451,37 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             toolbar: "undo redo newdocument link btnanchor btninsertimage btnmupload btnpreview code btnfullscreen btndocument",
             valid_elements: "*[*]",
             relative_urls:true,
-            setup: function(editor) {
+            setup: function (editor) {
+                $jq(editor.getElement()).data('index', mceindex++);
                 editor.on("init", function() {
                     ccweditor.format();
                     //测试用
-                    editor.setContent('');
-                    editor.insertContent('<img usemap="mymap" src="https://www.baidu.com/img/bd_logo1.png" />');
+                    //editor.insertContent('<img usemap="mymap" src="https://www.baidu.com/img/bd_logo1.png" />');
+                    var content = editor.getContent();
+                    if (content === '') {
+                        editor.setContent('<p><br></p>');
+                    }
 
                     tinymce.activeEditor.transitionPic = [];
                     mcequery(editor.dom.select(img)).each(function() {
                         var $this = $jq(this);
-//                    console.log($this.width()); console.log($this.height());
-
                         $this.attr('src', $this.attr('src')).load(function() {
                             $this.css('width', $this.width()).css('height', $this.height());
                             $this.css('display', 'block').css('visibility', '');
                             $this.css('width', '').css('height', '');
-                        });
+                        }); 
                     });
+
+                    //修正当点击toolbar 无法确认焦点的问题
+                    var container = $jq(editor.getElement()).parent().find('button');
+                    container.off('click').on('click', function () {
+                        var pcontainer = $jq(this).parents("div[class='mce-tinymce mce-container mce-panel']");
+                        var index = pcontainer.next().data('index');
+                        $jq(tinymce.editors[index].getBody()).focus();
+                    });
+
                 });
-
-
+             
                 editor.addButton("btninsertimage", {
                     icon: "btninsertimage",
                     tooltip: zhTip1,
@@ -483,10 +494,6 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     icon: "btnmupload",
                     tooltip: zhTip2,
                     onclick: function () {
-//                        tinymce.activeEditor.fsindex = 0;
-//                        if (editor.id === "mce2") {
-//                            tinymce.activeEditor.fsindex = 1;
-//                        }
                         tinymce.activeEditor.windowManager.open({
                             title: zhTip2,
                             url: tinymcepath + "src/page/mupload.html",
@@ -580,7 +587,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     }
                 });
 
-                editor.on("click", function(e) {
+                editor.on("click", function (e) {
                     var tagName = e.target.tagName;
                     var node;
                     if (tagName === 'A') {
