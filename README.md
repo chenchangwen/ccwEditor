@@ -10,7 +10,7 @@
 
 ###ccweditor 1.3.41 2015-5-14
 1.修正点击toolbar无法识别当前编辑器   
-2.修正初始化编辑器 selector 为(.ccweditor), 即支持多示例时的正确性
+2.修正初始化编辑器 selector 为(.ccweditor), 确保多实例时的正确性
 
 ###ccweditor 1.3.40 2015-4-1
 1.优化整体结构
