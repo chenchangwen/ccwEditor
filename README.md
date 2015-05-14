@@ -9,7 +9,7 @@
 4.支持自动将map转换为a
 
 ###ccweditor 1.3.41 2015-5-14
-1.修正初始化编辑器 selector 为(.ccweditor)即可
+1.修正初始化编辑器 selector 为(.ccweditor)即可   
 2.修正点击toolbar为最后一个编辑器
 
 ###ccweditor 1.3.40 2015-4-1
