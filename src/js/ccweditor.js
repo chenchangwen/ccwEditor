@@ -422,7 +422,8 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                 }
             },
             //清理
-            clean: function(el) {
+            clean: function (el) {
+                console.log(el)
                 for (var i = 0, len = el.length; i < len; i++) {
                     var $jqel = $jq(el[i]);
                     $jqel.css("border", "0").removeAttr(contenteditable);
@@ -697,13 +698,14 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
         };
 
         $jq(document).ready(function() {
-            $jq("form").submit(function(e) {
+            $jq("form").submit(function (e) {
                 e.preventDefault();
                 //提交前清理
                 for (var j = 0; j < tinyMCE.editors.length; j++) {
                     var editortemp = tinyMCE.editors[j];
                     ccweditor.clean(editortemp.dom.select(classimgpos));
                 }
+                return false;
                 this.submit();
             });
         });

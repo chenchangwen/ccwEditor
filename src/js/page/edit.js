@@ -3,7 +3,7 @@
         $(document).ready(function () {
             //变量声明
             //链接类型对象
-            var linktype = {
+            var linktype = {  
                 link: [],
                 button: ["youhui", "login"],
                 anchor: [],
@@ -699,7 +699,7 @@
 
                     $floatbtn.css({ "transform": "rotate(720deg)", 'visibility': 'hidden' });
                     isactivebtnhidden = true;
-
+                    debugger;
                     sidebar.temprow.remove();
                     $link.val($editnote.attr("href"));
                     $linktype.find("option[value='" + $editnote.attr("linktype") + "']").prop("selected", "selected").trigger("change");
