@@ -394,7 +394,8 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                 }
             },
             //清理
-            clean: function(el) {
+            clean: function (el) {
+                console.log(el)
                 for (var i = 0, len = el.length; i < len; i++) {
                     var $jqel = $jq(el[i]);
                     if ($jqel.prop('tagName') === "IMG") {
@@ -685,7 +686,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
         };
 
         $jq(document).ready(function() {
-            $jq("form").submit(function(e) {
+            $jq("form").submit(function (e) {
                 e.preventDefault();
                 //提交前清理
                 for (var j = 0; j < tinyMCE.editors.length; j++) {
@@ -699,6 +700,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                         }
                     });
                 }
+                return false;
                 this.submit();
             });
         });

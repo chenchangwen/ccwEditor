@@ -698,13 +698,16 @@
 
                     $floatbtn.css({ "transform": "rotate(720deg)", 'visibility': 'hidden' });
                     isactivebtnhidden = true;
-
                     sidebar.temprow.remove();
                     $link.val($editnote.attr("href"));
                     $linktype.find("option[value='" + $editnote.attr("linktype") + "']").prop("selected", "selected").trigger("change");
                     $linktarget.find('input[value=' + $editnote.attr("target") + ']').prop("checked", "checked").trigger("click");
                     //锚点/倒计时
-                    $linktarget.find("option[value='" + $editnote.attr("target") + "']").prop("selected", "selected").trigger("click");
+                    if ($editnote.attr("linktype") === 'anchor') {
+                        $linktarget.find("option[value='" + $editnote.attr("href").replace(/#/,'') + "']").prop("selected", "selected").trigger("click");
+                    } else {
+                        $linktarget.find("option[value='" + $editnote.attr("target") + "']").prop("selected", "selected").trigger("click");
+                    }
                     //时间类型
                     $("#countdowntype").find("option[value='" + $editnote.attr("datetype") + "']").prop("selected", "selected");
                     $sidebar.css("transform", "translateX(-10px)");
