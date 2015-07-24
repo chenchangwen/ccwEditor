@@ -2,7 +2,7 @@
 .mce-item-anchor {
     -moz-user-modify: read-only;
     -moz-user-select: all;
-    background: url('../../ccweditor/lib/tinymce/js/tinymce/skins/lightgray/img/anchor.png') no-repeat scroll center center;
+    background: url('../../vendor/tinymce/js/tinymce/skins/lightgray/img/anchor.png') no-repeat scroll center center;
     border: 1px dotted #3a3a3a;
     cursor: default;
     display: inline-block;
@@ -17,6 +17,16 @@
 .mce-content-body a:hover{
     cursor: default;
 }
+
+.mce-content-body img{
+    cursor: default;
+}
+
+::selection
+{
+  background: rgba(0,0,0,.0);
+}
+
 /*.mce-content-body p{
     height: 100%;
 }

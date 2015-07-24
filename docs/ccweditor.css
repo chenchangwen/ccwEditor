@@ -18,6 +18,8 @@ body, h1, h2, h3, h4, h5, h6, .uk-navbar-nav > li > a {
 }
 
 
-/*.cropwrap a {
-    display: none;
-}*/
+.imgpos {
+    text-decoration: none;
+    outline: none;
+    border: 0 none !important;
+}

@@ -22,6 +22,8 @@
             var width;
             var height;
             var cloneimg;
+            debugger;
+
             if (tabindex == 1) {
                 var pattern = /^[0-9]*[1-9][0-9]*$/;
                 if ($width.val() != "0") {
@@ -103,12 +105,11 @@
             $url.val(editorimg.attr("src"));
             buildupload();
         }
-
         function buildupload() {
             var progressbar = $("#progressbar"),
                 bar = progressbar.find(".uk-progress-bar"),
                 settings = {
-                    action: "/m.php?m=File&a=do_upload_img_2", // upload url
+                    action: "/index.php?act=upload_file&op=upload_show", // upload url
                     //action : 'http://admin.ve.cn/m.php?m=File&a=do_upload_img_2',
                     allow: "*.(jpg|png)", // allow only images
                     loadstart: function () {
@@ -121,7 +122,7 @@
                     },
                     allcomplete: function (response) {
                         response = JSON.parse(response);
-                        if (response.status ==="1") {
+                        if (response.status ===1) {
                             bar.css("width", "100%").text("100%");
                             setTimeout(function () {
                                 progressbar.addClass("uk-hidden");

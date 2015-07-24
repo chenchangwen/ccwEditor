@@ -57,7 +57,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             zhMsg1 = '请选择正确的区域',
 
             zhTitle1 = '插入/更换图片',
-            zhTitle2 = '新建热点',
+            zhTitle2 = '新建区域',
             zhTitle3 = '完成',
             zhTitle4 = '锚点',
             zhTitle5 = '编辑图片(双击区域编辑,可点击其他区域快速保存)',
@@ -120,7 +120,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                 }
                 tinymce.activeEditor.windowManager.open({
                     title: zhTitle1,
-                    url: tinymcepath + "src/page/upload.html?2015310",
+                    url: tinymcepath + "src/page/upload.html",
                     width: 450,
                     height: 250,
                     buttons: [
@@ -131,15 +131,29 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     ]
                 });
             },
-            editimage: function() {
+            editimage: function () {
                 if (isValidCheck()) {
                     var w = ($jq(document).width() < $jq(body).width() ? $jq(document).width() : $jq(body).width()) - 50,
                         h = (document.all ? document.getElementsByTagName("html")[0].offsetHeight : window.innerHeight) - 100;
+                    
                     tinymce.activeEditor.windowManager.open({
                         title: zhTitle5,
                         url: tinymcepath + "src/page/edit.html",
                         width: w,
                         height: h
+                    });
+
+                    $(".mce-close").off('click').on('click', function () {
+                        tinymce.activeEditor.windowManager.confirm('是否保存对 "当前图片" 的更改?', function(s) {
+                            if (s) {
+                                $('.mce-abs-layout').find('iframe').contents().find('#btnbar button:eq(2)').trigger('click');
+                                tinymce.activeEditor.windowManager.close();
+                            } else {
+                                tinymce.activeEditor.windowManager.close();
+                                return false;
+                            }
+                        });
+                        return false;
                     });
                 }
             },
@@ -366,48 +380,6 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                 }
                 //a
                 else if ($jqel[0].tagName === "A") {
-                    var data = $jqel.attr("data");
-                    if (data != undefined) {
-                        data = data.split("|||");
-                        //最多6个属性(超链接)
-                        if (data[0] == 1) {
-                            if ($jqel.attr(href).indexOf("#") >= 0) {
-                                $jqel.attr(linktype, anchor);
-                            } else {
-                                if (data[1] !== "") {
-                                    $jqel.attr(href, data[1]);
-                                }
-                                $jqel.attr(linktype, "link");
-                            }
-                            if (data[2] !== "") {
-                                $jqel.attr(target, data[2]);
-                            }
-                            if (data[3] !== "") {
-                                $jqel.css("left", data[3]);
-                            }
-                            if (data[4] !== "") {
-                                $jqel.css("width", data[4]);
-                            }
-                            if (data[5] !== "") {
-                                $jqel.css("top", data[5]);
-                            }
-                            if (data[5] !== "") {
-                                $jqel.css("width", data[5]);
-                            }
-                            if (data[6] !== "") {
-                                $jqel.css("height", data[6]);
-                            }
-                            var centerleft = (utils.accDiv(data[5], 2) - 45) || 0;
-                            var centertop = (utils.accDiv(data[6], 2) - 45) || 0;
-                            var tipchildstyle = "left:" + centerleft + "px;top:" + centertop + "px;";
-                            var html = "<b style=\"" + tipchildstyle + "\"></b>";
-                            $jqel.removeAttr("data").append(html);
-                        }
-                        $jqel.removeAttr("class").addClass(imgpos).css("position", "absolute").removeAttr('data');
-                        $jqparent = $jqel.parent(div);
-                        $jqparent.removeAttr("id").removeAttr("class").addClass(cropwrap).children(img).removeAttr("id");
-
-                    }
                     var name = $jqel.attr("name");
                     if (name != undefined) {
                         $jqparent = $jqel.parent();
@@ -425,10 +397,23 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             clean: function(el) {
                 for (var i = 0, len = el.length; i < len; i++) {
                     var $jqel = $jq(el[i]);
-                    $jqel.css("border", "0").removeAttr(contenteditable);
-                    var style = $jqel.attr("style").replace(/\"\#\"/g, "#");
-                    $jqel.attr("data-mce-style", style);
-                    $jqel.attr('style', style);
+                    if ($jqel.prop('tagName') === "IMG") {
+                        if ($jqel.attr('startdate') === '') {
+                            $jqel.removeAttr('dayhours');
+                            $jqel.removeAttr('startdate');
+                            $jqel.removeAttr('fontstyle');
+                        }
+                        if ($jqel.attr('enddate') === '') {
+                            $jqel.removeAttr('enddate');
+                        }
+                    } else {
+                        $jqel.css("border", "0").removeAttr(contenteditable);
+                        $jqel.parent().removeAttr(contenteditable);
+                        var style = $jqel.attr("style").replace(/\"\#\"/g, "#");
+                        $jqel.attr("data-mce-style", style);
+                        $jqel.attr('style', style);
+                        $jqel.find('img').css('display', 'block');
+                    }
                 }
             }
         }
@@ -437,7 +422,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             selector: ".ccweditor",
             theme: "modern",
             width: "100%",
-            height: 100,
+            height: 500,
             cleanup: true,
             object_resizing: false,
             plugins: [
@@ -467,7 +452,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                         var $this = $jq(this);
                         $this.attr('src', $this.attr('src')).load(function() {
                             $this.css('width', $this.width()).css('height', $this.height());
-                            $this.css('display', 'block').css('visibility', '');
+                            $this.css('display', '').css('visibility', '');
                             $this.css('width', '').css('height', '');
                         }); 
                     });
@@ -597,6 +582,9 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                         e.preventDefault();
                     } else if (tagName === 'IMG') {
                         node = mcequery(e.target).find('img')[0];
+                        if (typeof node === "undefined") {
+                            node = mcequery(e.target.parentNode).find('img')[0];
+                        }
                         tinyMCE.activeEditor.selection.select(node);
                     }
                 });
@@ -702,7 +690,14 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                 //提交前清理
                 for (var j = 0; j < tinyMCE.editors.length; j++) {
                     var editortemp = tinyMCE.editors[j];
+                    ccweditor.clean(editortemp.dom.select('img'));
                     ccweditor.clean(editortemp.dom.select(classimgpos));
+                    var $p = mcequery(editortemp.dom.select('p'));
+                    $p.each(function () {
+                        if ($(this).html() === '') {
+                            mcequery($(this)).remove();
+                        }
+                    });
                 }
                 this.submit();
             });

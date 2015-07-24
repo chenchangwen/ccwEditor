@@ -1,22 +1,23 @@
-﻿/*! UIkit 2.11.0 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.21.0 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 (function(addon) {
 
     var component;
 
-    if (jQuery && jQuery.UIkit) {
-        component = addon(jQuery, jQuery.UIkit);
+    if (window.UIkit) {
+        component = addon(UIkit);
     }
 
     if (typeof define == "function" && define.amd) {
         define("uikit-upload", ["uikit"], function(){
-            return component || addon(jQuery, jQuery.UIkit);
+            return component || addon(UIkit);
         });
     }
 
-})(function($, UI){
+})(function(UI){
+
+    "use strict";
 
     UI.component('uploadSelect', {
-
 
         init: function() {
 
@@ -49,7 +50,7 @@
                     e.preventDefault();
 
                     $this.element.removeClass($this.options.dragoverClass);
-                    $this.element.trigger('uk.dropped', [e.dataTransfer.files]);
+                    $this.element.trigger('dropped.uk.upload', [e.dataTransfer.files]);
 
                     xhrupload(e.dataTransfer.files, $this.options);
                 }
@@ -93,7 +94,7 @@
     })();
 
     if (UI.support.ajaxupload){
-        $.event.props.push("dataTransfer");
+        UI.$.event.props.push("dataTransfer");
     }
 
     function xhrupload(files, settings) {
@@ -102,7 +103,7 @@
             return this;
         }
 
-        settings = $.extend({}, xhrupload.defaults, settings);
+        settings = UI.$.extend({}, xhrupload.defaults, settings);
 
         if (!files.length){
             return;
@@ -197,7 +198,7 @@
 
                     if (settings.type=="json") {
                         try {
-                            response = $.parseJSON(response);
+                            response = UI.$.parseJSON(response);
                         } catch(e) {
                             response = false;
                         }
@@ -234,15 +235,7 @@
         'complete'        : function(){},
         'allcomplete'     : function(){},
         'readystatechange': function(){},
-        'notallowed': function (file, settings) {
-            $.UIkit.notify({
-                message: '上传失败!只可以上传.png|.jpg文件.',
-                status: 'danger',
-                timeout: 5000,
-                pos: 'top-center'
-            });
-            // alert('Only the following file types are allowed: '+settings.allow);
-        }
+        'notallowed'      : function(file, settings){ alert('Only the following file types are allowed: '+settings.allow); }
     };
 
     function matchName(pattern, path) {

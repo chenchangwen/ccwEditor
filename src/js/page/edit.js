@@ -7,7 +7,7 @@
                 link: [],
                 button: ["youhui", "login"],
                 anchor: [],
-                countdown: ["0", "1", "2", "3"]
+                countdown: ["0", "1", "3"]
 //                countdown: ["距离开始时间", "距离结束时间", "时间循环", "先开始后结束"]
             };
             //带有$+变量名,均为jquery对象
@@ -127,7 +127,7 @@
                     width: "100%",
                     height: 50,
                     cleanup: true,
-                    content_css: utils.tinymcepath + "ccweditor.css",
+                    //content_css: utils.tinymcepath + "ccweditor.css",
                     language: "zh_CN",
                     menu: [],
                     force_hex_style_colors: true,
@@ -213,7 +213,6 @@
                 value = $editnote.data('id');
                 value = value == undefined ? "" : value;
                 var linktargetvalue = obj.find("input[type='radio']:checked").val();
-
                 //如果是第一次目标对象处理并且保存的值,或者重新选择的值等于'领取优惠券' 
                 if (linktargetvalue === str) {
                     sidebar.temprow.remove();
@@ -227,8 +226,8 @@
                     sidebar.temprow.remove();
                 }
                     //如果是倒计时
-                else if (sidebar.linktype.getValue() == "countdown") {
-                    if (tagName == "OPTION") {
+                else if (sidebar.linktype.getValue() === "countdown") {
+                    if (tagName === "OPTION") {
                         var $temprow = $(".temprow");
                         //除了第一个临时行,其他删除
                         for (var i = $temprow.length - 1; i > 0; i--) {
@@ -243,7 +242,7 @@
                         });
 
                         //如果链接目标是"时间循环"添加以下DOM
-                        if (obj.val() == linktype["countdown"][2]) {
+                        if (obj.val() === "2") {
                             html = "";
                             html = getTempRowHtml(function () {
                                 for (var i = 0; i <= 23; i++) {
@@ -287,7 +286,7 @@
                             obj.parent().parent().after(countdowntype);
                             //中文后缀
                             var cdsuffixischecked = "";
-                            if ($editnote.attr("cdsuffix") == "false") {
+                            if ($editnote.attr("cdsuffix") === "false") {
                                 cdsuffixischecked = "";
                             } else {
                                 cdsuffixischecked = "checked=\"checked\"";
@@ -696,16 +695,19 @@
                     }
                     $baritem2.show();
                     $baritem1.hide();
-
                     $floatbtn.css({ "transform": "rotate(720deg)", 'visibility': 'hidden' });
                     isactivebtnhidden = true;
-
                     sidebar.temprow.remove();
                     $link.val($editnote.attr("href"));
-                    $linktype.find("option[value='" + $editnote.attr("linktype") + "']").prop("selected", "selected").trigger("change");
+                    $linktype.find("input[value='" + $editnote.attr("linktype") + "']").prop("checked", "checked").trigger("click");
                     $linktarget.find('input[value=' + $editnote.attr("target") + ']').prop("checked", "checked").trigger("click");
                     //锚点/倒计时
-                    $linktarget.find("option[value='" + $editnote.attr("target") + "']").prop("selected", "selected").trigger("click");
+                    if($editnote.attr("linktype")==='anchor')
+                    {
+                        $linktarget.find("option[value='" + $editnote.attr("href").replace(/#/,'') + "']").prop("selected", "selected").trigger("click");
+                    }else{
+                        $linktarget.find("option[value='" + $editnote.attr("target") + "']").prop("selected", "selected").trigger("click");
+                    }
                     //时间类型
                     $("#countdowntype").find("option[value='" + $editnote.attr("datetype") + "']").prop("selected", "selected");
                     $sidebar.css("transform", "translateX(-10px)");
@@ -718,7 +720,7 @@
                 hide: function (pararm) {
                     $link.val("");
                     //类型默认选择第一个
-                    $linktype.children("option").eq(0).prop("selected", "selected").trigger("click");
+                    $linktype.children("input").eq(0).prop("checked", "checked").trigger("click");
                     $sidebar.css("transform", "translateX(100%)");
                     $floatbtn.css({ "transform": "rotate(0deg)", 'visibility': 'visible' });
                     isactivebtnhidden = false;
@@ -738,7 +740,7 @@
                 //链接类型
                 linktype: {
                     getValue: function () {
-                        return $linktype.find("option:selected").val();
+                        return $linktype.find("input:checked").val();
                     }
                 },
                 //验证
@@ -751,7 +753,7 @@
                         else
                             if ($baritem1.is(":hidden")) {
                                 var re = new RegExp(component.regexp.url, "ig");
-                                if ($linktype.val() == 'link') {
+                                if (sidebar.linktype.getValue() === 'link') {
                                     if (!re.test($link.val())) {
                                         uikitextend.uikit.notify({ message: "请输入正确的链接地址!" });
                                         return false;
@@ -792,12 +794,14 @@
                                 return false;
                             }
                             $("#save").trigger('click');
-                            editor.windowManager.close();
+
                             //如果父存在DIV,即不是第一次编辑,则删除.
                             if (editor.selection.getNode().parentNode.tagName === "DIV") {
                                 editor.dom.remove(editor.selection.getNode().parentNode);
                             }
                             editor.selection.setContent($content.html());
+                            editor.windowManager.close();
+
                         }
                         else if (index === 3) {
                             editor.windowManager.close();
@@ -819,18 +823,6 @@
                             };
                         }
                     });
-
-//                    $("#close").on("click", function () {
-//                        if (typeof (jcrop_api) != "undefined") {
-//                            jcrop_api.release();
-//                            jcrop_api.destroy();
-//                            delete jcrop_api;
-//                            $editnote.css("border", "2px solid blue");
-//                            $editnote = null;
-//                            isnewselected = false;
-////                            sidebar.hide();
-//                        }
-//                    });
 
                     $("#addhotlink").on("click", function () {
                         if (typeof (jcrop_api) != "undefined") {
@@ -898,23 +890,21 @@
                     });
 
                     //链接类型点击事件 兼容chrome
-                    $linktype.change(function () {
+                    $linktype.delegate('input', 'click', function () {
                         //先删除临时行
-
                         sidebar.temprow.remove();
                         var $this = $(this),
-                            linkvalue = linktype[$this.val()],
                             html = "",
                             linkval = $this.val();
                         //如果相等则禁止输入地址
-                        if (linkval == "button" || linkval == "anchor" || linkval == "countdown") {
+                        if (linkval === "button" || linkval === "anchor" || linkval === "countdown") {
                             $("#linkwrap").hide();
                         } else {
                             $("#linkwrap").show();
                         }
 
                         //如果是锚点(读取并生成锚点)
-                        if (linkval == "anchor") {
+                        if (linkval === "anchor") {
                             //锚点只读第一个编辑器的
                             var editor1 = parent.tinymce.editors[0];
                             var $anchor = $(editor1.getBody()).find(".tempanchor");
@@ -941,7 +931,8 @@
                                 }
                             } else if (linkval === 'button') {
                                 html = component.button;
-                            } else if (linkval === 'countdown') {
+                            }
+                            else if (linkval === 'countdown') {
                                 html = component.countdown;
                             }
                         }

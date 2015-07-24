@@ -5,7 +5,7 @@
     <title></title>
     <link href="../../vendor/uikit/css/uikit.gradient.min.css" rel="stylesheet" />
     <link href="../../vendor/uikit/css/components/notify.almost-flat.css" rel="stylesheet" />
-    <script data-main="../js/page/upload.js?20152121940" src="../../vendor/require.js?20152121940"></script>
+    <script data-main="../js/page/upload.js" src="../../vendor/require.js"></script>
     <style type="text/css">
         .uk-placeholder {
             background: none repeat scroll 0 0 #fafafa;
@@ -14,7 +14,21 @@
             margin-bottom: 15px;
             padding: 20px;
         }
-
+        .uk-progress-bar {
+          width: 0;
+          height: 100%;
+          background: #009dd8;
+          float: left;
+          -webkit-transition: width .6s ease;
+          transition: width .6s ease;
+          font-size: 12px;
+          color: #fff;
+          text-align: center;
+          background-image: -webkit-linear-gradient(top,#00b4f5,#008dc5);
+          background-image: linear-gradient(to bottom,#00b4f5,#008dc5);
+          box-shadow: inset 0 -1px 0 rgba(0,0,0,.2),inset 0 0 0 1px rgba(0,0,0,.1);
+          text-shadow: 0 -1px 0 rgba(0,0,0,.2);
+        }
         .uk-form-file input[type="file"] {
             cursor: pointer;
             font-size: 40px;

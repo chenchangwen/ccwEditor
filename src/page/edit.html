@@ -26,11 +26,16 @@
             -o-transition: all .25s;
         }
         #paneltitle {
-            color: white;
-            font-size: 20px;
-            font-weight: bold;
-            line-height: 32px;
-            background: #1D1F20;
+          color: #fff;
+          font-size: 20px;
+          font-weight: bold;
+          line-height: 32px;
+          background: #009dd8;
+          background-image: linear-gradient(to bottom,#00b4f5,#008dc5);
+          border-color: rgba(0,0,0,.2);
+          border-bottom-color: rgba(0,0,0,.4);
+          text-shadow: 0 -1px 0 rgba(0,0,0,.2);
+          background-origin: border-box;
             /*cursor: move;*/
         }
         body {
@@ -171,7 +176,7 @@
             <h3 class="uk-panel-title" id="paneltitle">当前选中区域</h3>
             <form class="uk-form uk-form-stacked " id="form">
                 <div class="uk-form-row">
-                    <label for="width" class="uk-form-label">区域状态</label>
+                    <label for="width" class="uk-form-label">位置</label>
                     <div class="uk-form-controls">
                         <label>宽</label>
                         <input type="text" placeholder="宽" id="width" class="sizewidth" style="color: red" maxlength="4" />
@@ -185,14 +190,24 @@
                     </div>
                 </div>
                 <div class="uk-form-row">
-                    <label for="linktype" class="uk-form-label">链接类型</label>
+                    <label for="linktype" class="uk-form-label">类型</label>
                     <div class="uk-form-controls">
-                        <select id="linktype">
-                            <option selected="selected" value="link">链接</option>
-                            <option value="button">按钮</option>
-                            <option value="anchor">锚点</option>
-                            <option value="countdown">倒计时</option>
-                        </select>
+                        <div id="linktype">
+                            <input id="linktype1" value="link" type="radio" name="linktype" checked="checked">
+                            <label for="linktype1">链接</label>
+                            <input id="linktype2" value="button" type="radio" name="linktype">
+                            <label for="linktype2">按钮</label>
+                            <input id="linktype3" value="anchor" type="radio" name="linktype">
+                            <label for="linktype3">锚点</label>
+                            <input id="linktype4" value="countdown" type="radio" name="linktype">
+                            <label for="linktype4">倒计时</label>
+                        </div>
+<!--                         <select id="linktype">-->
+<!--                         <option selected="selected" value="link">链接</option>-->
+<!--                         <option value="button">按钮</option>-->
+<!--                         <option value="anchor">锚点</option>-->
+<!--                         <option value="countdown">倒计时</option>-->
+<!--                         </select>-->
                     </div>
                 </div>
                 <div class="uk-form-row" id="linkwrap" style="display: none">
@@ -226,7 +241,7 @@
     <div class="uk-grid">
         <div class="tm-sidebar">
             <ul class="tm-nav uk-nav" id="btnbar">
-                <li><button class="uk-button uk-button-primary" type="button">新建热点</button></li>
+                <li><button class="uk-button uk-button-primary" type="button">新建区域</button></li>
                 <li><button class="uk-button uk-button-primary" type="button">图片设定</button></li>
                 <li><button class="uk-button uk-button-primary" type="button">完成</button></li>
                 <li><button class="uk-button uk-button-primary" type="button">关闭</button></li>
@@ -249,6 +264,6 @@
 </div>
 
 <a href="javascript:void(0)" id="floatbtn" class="uk-icon-button uk-icon-bars btnhidden" title="显示" ></a>
-<script data-main="../js/main/edit.js" src="../../vendor/require.js"></script>
+<script data-main="../js/page/edit.js" src="../../vendor/require.js"></script>
 </body>
 </html>

@@ -1,217 +1,144 @@
-﻿//start by ccw
-var goodIdAry = [],
+﻿var goodIdAry = [],
     showGoodIdAry = [];
-$(document).ready(function () {
-    var serverTime = new Date().getTime() / 1000;
-    //领取优惠卷事件
-    $('a[target="youhui"],.youhui').on('click', function () {
-        var data = $(this).data('id') || '';
-        data = data.toString().split(',');
-
-        //最大对象参数长度
-        var maxlen = 3;
-        //请求接口的对象
-        var query = {
-            ajax: 1
-        };
-        var len = data.length <= maxlen ? data.length : maxlen;
-        for (var i = 1; i <= len; i++) {
-            query['cid' + i] = data[i - 1];
-        }
-        $.ajax({
-            url: AJAX_URL,
-            data: query,
-            type: 'post',
-            success: function (obj) {
-                var data = eval('(' + obj + ')');
-                if (data.status == 2) {
-                    easyLogin.ajax_login();
-                    return;
-                } else if (data.status == 1) {
-                    layer.alert(data.desc, 9);
-                    return;
-                } else {
-                    layer.alert(data.desc);
-                    return;
+var patterns = [/goods_id=\d+/, /\d+.html/ig, /goods-\d+/],
+    $imgpos,
+    $countdown,
+    serverTime = new Date().getTime() / 1000;
+var ccweditor = {
+    /* 图片热点事件 */
+    imgPosEvent: function() {
+        $imgpos.each(function(i) {
+            var $this = $(this);
+            /* 显示a标签 */
+            if ($this[0].tagName === "A" || $this.attr("linktype") === "countdown") {
+                $this.css("display", "block!important");
+            } else {
+                $this.css("display", "none");
+            }
+            var str = $this.attr("href");
+            if (str) {
+                if (str.indexOf("item.shenba.com") >= 0) {
+                    for (var k = 0; k < patterns.length; k++) {
+                        if (patterns[k].test(str)) {
+                            str = str.toString();
+                            str = str.match(patterns[k]);
+                        }
+                    }
+                    if (str != null) {
+                        str = str.toString().match(/\d+/);
+                        if ($this.attr("linkicon") == undefined) {
+                            if (str != null) {
+                                goodIdAry.push(str);
+                            }
+                        }
+                    }
                 }
-            },
-            error: function () {
-                layer.alert("领取失败，请稍后重试！");
+            }
+            /* 如果是最后一个,则显示图片tip */
+            if (i === ($imgpos.length - 1)) {
+                ccweditor.showGoodPicTip();
             }
         });
-    });
-    //$('.imgpos').remove();
-
-    //登陆事件
-    $('a[target="login"],.login').on('click', function () {
-        easyLogin.ajax_login();
-    });
-
-    //    $('.cropwrap').delegate('b','click', function() {
-    //        var $this = $(this),
-    //            thishref = $this.attr('href');
-    //        if (thishref !== '') {
-    //            window.open(thishref);
-    //        }
-    //    });
-
-    //brand-banner事件
-    $('.brand-banner').delegate('area', 'click', function (e) {
-        var $this = $(this);
-        if ($this.attr('linktype') == 'countdown') {
-            e.preventDefault();
-        }
-    });
-
-    //右侧导航事件
-    $('.brand_lift').delegate('area', 'click', function () {
-        var $this = $(this),
-            //获得当前点击锚点的索引
-            index = $('.tempanchor').index($('.tempanchor[id="' + $this.attr('linktarget') + '"]')),
-            $allImg = $('.brand_lift img');
-        //如果超过1个img
-        if ($allImg.length > 1) {
-            var $img = $allImg.eq(index);
-            //当前area父亲的同级前一个元素('img')改变src
-            $this.parent().prev().attr('src', $img.attr('src'));
-        }
-    });
-    //切换图片,显示商品图片tip,处理
-    var imgposLen = $('.imgpos').length;
-    $('.imgpos').each(function (i) {
-        var $this = $(this);
-        var $img = $this.prev();
-
-        if ($this.attr('trnpic') != undefined) {
-            //切换图片src
-            var trnpic = $this.attr('trnpic').split(',');
-            //切换图片时间
-            var trndate = $this.attr('trndate').split(',');
-            if (trndate != '') {
-                $img.hide();
-                var timeNow = serverTime * 1000;
-                var timeNowDate = new Date(timeNow);
-                var timeNowHour = timeNowDate.getHours();
-                for (var i = 0; i < trnpic.length; i++) {
-                    //如果设定的小时等于当前的小时 并且 当前图片src不等于切换图片的src
-                    if (parseInt(trndate[i]) == timeNowHour && $img.attr('src') != trnpic[i]) {
-                        $img.attr('src', trnpic[i]);
+    },
+    /* 切换图片事件 */
+    trnpicEvent: function () {
+        $('.cropwrap img').each(function () {
+            var $this = $(this);
+            if ($this.attr("trnpic") != undefined) {
+                /* 切换图片src */
+                var trnpic = $this.attr("trnpic").split(",");
+                /* 切换图片时间 */
+                var trndate = $this.attr("trndate").split(",");
+                if (trndate !== "") {
+                    $this.hide();
+                    var timeNow = serverTime * 1000;
+                    var timeNowDate = new Date(timeNow);
+                    var timeNowHour = timeNowDate.getHours();
+                    for (var i = 0; i < trnpic.length; i++) {
+                        //如果设定的小时等于当前的小时 并且 当前图片src不等于切换图片的src
+                        if (parseInt(trndate[i]) === timeNowHour && $this.attr("src") !== trnpic[i]) {
+                            $this.attr("src", trnpic[i]);
+                        }
                     }
-                }
-                $img.show();
-            }
-        }
-        //显示a标签,兼容map
-        if ($this[0].tagName === 'A' || $this.attr('linktype') === 'countdown') {
-            var style = $this.attr('style') + 'display:block!important';
-            $this.css('cssText', style);
-        } else {
-            $this.css('display', 'none');
-        }
-
-        var str = $this.attr('href');
-        if (str != undefined) {
-            str = str.toString();
-            str = str.match(/goods-\d+/);
-            if (str != null) {
-                str = str.toString().match(/\d+/);
-                if ($this.attr('linkicon') == undefined) {
-                    if (str != null) {
-                        goodIdAry.push(str);
-                    }
+                    $this.show();
                 }
             }
-        }
-        //如果是最后一个,则显示图片tip
-        if (i == (imgposLen - 1)) {
-            showGoodPicTip();
-        }
-    });
-
-    //倒计时
-    (function () {
+        });
+    },
+    /* 倒计时事件 */
+    countdownEvent: function() {
         var timeEnd, //结束时间
-            timeDistance, //时间差
-            cycleTimeEnd; //循环时间
-        var $countdown = $('.imgpos[linktype="countdown"]:first');
-        var $map = $countdown.parent().children('img');
-        var startdate = $map.attr('startdate');
-        var enddate = $map.attr('enddate');
-        var dayhours = $map.attr('dayhours');
+                 timeDistance, //时间差
+                 cycleTimeEnd; //循环时间
+        var $img = $(".imgpos[linktype=\"countdown\"]:first").parent().children("img");
+        var startdate = $img.attr("startdate");
+        var enddate = $img.attr("enddate");
+        var dayhours = $img.attr("dayhours");
 
         if (startdate != undefined) {
-            startdate = new Date($map.attr('startdate').replace(/-/ig, '/'));
+            startdate = new Date($img.attr("startdate").replace(/-/ig, "/"));
         }
         if (enddate != undefined) {
-            enddate = new Date($map.attr('enddate').replace(/-/ig, '/'));
+            enddate = new Date($img.attr("enddate").replace(/-/ig, "/"));
         }
 
-        var fontstyle = $map.attr('fontstyle');
+        var fontstyle = $img.attr("fontstyle");
         if (fontstyle != undefined) {
-            fontstyle = $map.attr('fontstyle').replace(/\$\$/ig, ';');
+            fontstyle = $img.attr("fontstyle").replace(/\$\$/ig, ";");
         }
 
-        //倒计时对象
-        $('.imgpos[linktype="countdown"]').each(function () {
+        $countdown.each(function () {
             var $this = $(this);
-            var linktarget = $this.attr('target') || $this.attr('linktarget'),
-                datetype = $this.attr('datetype'),
-                cdsuffix = $this.attr('cdsuffix');
+            var linktarget = $this.attr("target") || $this.attr("linktarget"),
+                datetype = $this.attr("datetype"),
+                cdsuffix = $this.attr("cdsuffix");
             //替换'-'为能被Date对象所处理的字符串
-            date = $this.data('id') == undefined ? '0' : $this.data('id').replace(/-/ig, '/');
-            if (linktarget === '2' || linktarget === '时间循环') {
-                cycleTimeEnd = date.split(',');
-            } else if (linktarget === '0' || linktarget === '距离开始时间') {
+            date = $this.data("id") == undefined ? "0" : $this.data("id").replace(/-/ig, "/");
+            if (linktarget === "2") {
+                cycleTimeEnd = date.split(",");
+            } else if (linktarget === "0") {
                 timeEnd = startdate;
-            } else if (linktarget === '1' || linktarget === '距离结束时间') {
+            } else if (linktarget === "1") {
                 timeEnd = enddate;
             }
 
-            var style = $this.attr('style') + fontstyle;
-            $this.attr('style', style);
-            if ($this.css('font-size') != '') {
-                style += 'line-height:' + $this.css('font-size');
+            var style = $this.attr("style") + (fontstyle === ';font-size:;color:;' ? '' : fontstyle);
+            $this.attr("style", style);
+            if ($this.css("font-size") !== "") {
+                style += "line-height:" + $this.css("font-size");
             }
-            $this.attr('style', style);
-            var html = '';
-            //            var html = '<div class="timesContainer" style="' + fontstyle + '">';
-            var issuffix = cdsuffix == "true" ? true : '';
+            $this.attr("style", style);
+            var html = "";
+            var issuffix = cdsuffix === "true" ? true : "";
             switch (datetype) {
-                case 'hour':
+                case "hour":
                     if (issuffix) {
-                        issuffix = '时';
+                        issuffix = "时";
                     }
-                    html += '<span class="timeHour"></span>' + '<span>' + issuffix + '</span>';
+                    html += "<span class='hour'></span>" + "<span>" + issuffix + "</span>";
                     break;
-                case 'minute':
+                case "minute":
                     if (issuffix) {
-                        issuffix = '分';
+                        issuffix = "分";
                     }
-                    html += '<span class="timeMinute"></span>' + '<span>' + issuffix + '</span>';
+                    html += "<span class='minute'></span>" + "<span>" + issuffix + "</span>";
                     break;
-                case 'second':
+                case "second":
                     if (issuffix) {
-                        issuffix = '秒';
+                        issuffix = "秒";
                     }
-                    html += '<span class="timeSecond"></span>' + '<span>' + issuffix + '</span>';
+                    html += "<span class='second'></span>" + "<span>" + issuffix + "</span>";
                     break;
             }
-            //            html += "</div>";
-            //            html += "</div>";
             $this.html(html);
-            //            $this.removeAttr('linktarget');
         });
-        var
-            timeHour = $(".timeHour"),
-            timeMinute = $(".timeMinute"),
-            timeSecond = $(".timeSecond");
 
-        countDown();
-
+        var timeHour = $(".hour"),
+            timeMinute = $(".minute"),
+            timeSecond = $(".second");
 
         function countDown() {
             //获取当前服务器时间
-            //时间循环类型
             var timeNow = serverTime * 1000;
             if (cycleTimeEnd != undefined) {
                 for (var i = 0; i < cycleTimeEnd.length - 1; i++) {
@@ -231,7 +158,7 @@ $(document).ready(function () {
                         //如果当前时间小于循环时间
                         //时间循环只要不超过结束时间,用cycleHour构建的时间减去当前时间即可
                         if (timeNowHour < cycleHour) {
-                            var edate = year + '/' + month + '/' + day + ' ' + cycleHour + ':00:00';
+                            var edate = year + "/" + month + "/" + day + " " + cycleHour + ":00:00";
                             timeDistance = new Date(edate) - timeNow;
                             break;
                         }
@@ -241,7 +168,6 @@ $(document).ready(function () {
                 //距离开始时间, 距离结束时间类型
             else if (timeEnd != undefined) {
                 timeDistance = timeEnd - timeNow;
-                //console.log(timeDistance)
             } else {
                 //先开始后结束类型
                 if (timeNow <= startdate) {
@@ -275,8 +201,8 @@ $(document).ready(function () {
                 //转换后:最大小时
                 maxintHour = parseInt(intHour) + (intDay * 24);
                 //如果剩余天数大于1,并且开启天数转换
-                if (intDay > 0 && dayhours == 'true' && maxintHour >= 24) {
-                    timeHour.html(intDay + '天 ' + intHour);
+                if (intDay > 0 && dayhours === "true" && maxintHour >= 24) {
+                    timeHour.html(intDay + "天 " + intHour);
                 } else {
                     //intHour = parseInt(intHour) + (intDay * 24);
                     timeHour.html(maxintHour);
@@ -291,69 +217,93 @@ $(document).ready(function () {
                 //活动结束
                 if (typeof cdtimeout != "undefined")
                     clearTimeout(cdtimeout);
-                $(".imgpos[linktype='countdown']").remove();
+                $countdown.remove();
             }
         }
-    })();
-});
-
-//请求数据 version1
-function requestData(option, callback) {
-    var settings = {
-        type: 'post'
-    };
-    var options = $.extend({}, settings, option)
-    $.ajax({
-        url: options.url,
-        data: options.data,
-        type: options.type,
-        success: function (msg) {
-            if (typeof callback == 'function') {
-                callback(msg);
+        countDown();
+    },
+    /* 显示商品图片提示 */
+    showGoodPicTip: function() {
+        if (goodIdAry.length === 0)
+            return false;
+        var query = {
+            url: "/index.php?act=index&op=getgoods_storage",
+            data: {
+                client: "pc",
+                goods_id: goodIdAry.toString()
             }
-        }
-    });
-}
+        };
 
-//显示商品图片提示
-function showGoodPicTip() {
-    if (goodIdAry.length == 0)
-        return false;
-    var query = {
-        url: '/index.php?ctl=brandcate&act=get_brandcate_deal_stock',
-        data: {
-            deal_ids: goodIdAry.toString()
+        function requestData(option, cb) {
+            var settings = {
+                type: "post"
+            };
+            var options = $.extend({}, settings, option);
+            $.ajax({
+                url: options.url,
+                data: options.data,
+                type: options.type,
+                success: function(msg) {
+                    if (typeof cb == "function") {
+                        cb(msg);
+                    }
+                }
+            });
         }
-    };
-    //请求是否显示图片id的商品
-    requestData(query, function (msg) {
-        msg = $.parseJSON(msg);
-        if (msg.status == 1) {
-            if (msg.data != undefined) {
-                if (msg.data.deal_amount != undefined) {
-                    var dealmount = msg.data.deal_amount;
-                    for (var i = 0, len = msg.data.deal_amount.length; i < len; i++) {
-                        //如果数量大于1则存储
-                        if (dealmount[i].amount <= 0) {
-                            if (dealmount[i].id != '')
-                                showGoodIdAry.push(dealmount[i].id);
-                        }
-                    };
-                    //遍历需要显示的id数组
-                    for (var i = 0, len = showGoodIdAry.length; i < len; i++) {
-                        $('.imgpos').each(function () {
-                            var $this = $(this);
-                            var href = $this.attr('href');
-                            if (href != undefined) {
-                                if (href.indexOf(showGoodIdAry[i]) >= 0) {
-                                    $this.children('b').css('display', 'block');
-                                }
+
+        /* 请求是否显示图片id的商品 */
+        requestData(query, function(response) {
+            var json = $.parseJSON(response);
+            if (json.data != undefined) {
+                var jsondata = json.data;
+                if (jsondata.status === 1) {
+                    if (jsondata.list != undefined) {
+                        var jsonlist = jsondata.list;
+                        var i = 0, len = 0;
+                        for (i = 0, len = jsonlist.length; i < len; i++) {
+                            /* 如果数量大于1则存储 */
+                            if (jsonlist[i].goods_storage <= 0) {
+                                if (jsonlist[i].goods_id !== "")
+                                    showGoodIdAry.push(jsonlist[i].goods_id);
                             }
-                        });
-                    };
+                        };
+                        /* 遍历需要显示的id数组 */
+                        for (i = 0, len = showGoodIdAry.length; i < len; i++) {
+                            $(".imgpos").each(function() {
+                                var $this = $(this);
+                                var href = $this.attr("href");
+                                if (href) {
+                                    for (var j = 0; j < patterns.length; j++) {
+                                        href = href.toString().match(/\d+/);
+                                        if (href[0] == showGoodIdAry[i]) {
+                                            $this.children("b").css("display", "block");
+                                        }
+                                    }
+                                }
+                            });
+                        };
+                    }
                 }
             }
-        }
-    });
-}
-//end by ccw
+        });
+    },
+    /* dom缓存 */
+    domCache: function() {
+        $imgpos = $(".imgpos");
+        $countdown = $(".imgpos[linktype='countdown']");
+    },
+    /* 绑定事件 */
+    bindEvents: function () {
+        ccweditor.trnpicEvent();
+        ccweditor.imgPosEvent();
+        ccweditor.countdownEvent();
+    },
+    /* 构造方法 */
+    struc: function() {
+        $(document).ready(function() {
+            ccweditor.domCache();
+            ccweditor.bindEvents();
+        });
+    }
+};
+ccweditor.struc();

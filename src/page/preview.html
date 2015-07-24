@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>ccweditor 预览</title>
+    <title>专场预览</title>
     <link href="../../vendor/uikit/css/uikit.docs.min.css" rel="stylesheet" />
     <script src="../../vendor/tangram.js"></script>
     <script src="../../vendor/jquery.min.js"></script>
@@ -38,9 +38,14 @@
             } catch (ex) {
             }
             //fixArea(true);
-            $('.imgpos').css('border',0);
-            var date = baidu.date.format(new Date(),'yyyy-MM-dd hh:mm:ss');
-            $("#marktime").text(date);
+//            $('.imgpos').css('border', 0);
+//            var setDate= function() {
+//                var date = baidu.date.format(new Date(), 'yyyy-MM-dd hh:mm:ss');
+//                $("#marktime").text(date);
+//            }
+//            setDate();
+//            setInterval(setDate, 1000);
+            
             $('img').load(function () {
                 $content.show();
                 spinner.stop();
@@ -80,13 +85,10 @@
     <div>
         <div class="tm-middle">
             <div class="uk-container uk-container-center">
-                <article class="uk-article">
-                    <h1 class="uk-article-title"><span class="uk-badge">注意</span>当前时间:<span id="marktime"></span></h1>
-                    <div class="uk-grid">
-                        <div class="uk-width-1-1" id="content" style="display: none">
-                        </div>
+                <div class="uk-grid">
+                    <div class="uk-width-1-1" id="content" style="display: none">
                     </div>
-                </article>
+                </div>
             </div>
         </div>
     </div>
