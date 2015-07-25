@@ -8,6 +8,8 @@
     <script src="../../vendor/tinymce/js/tinymce/tinymce.min.js"></script>
     <link href="../../vendor/uikit/css/components/notify.almost-flat.css" rel="stylesheet" />
     <script src="../../vendor/My97DatePicker/WdatePicker.js"></script>
+    <link href="../../vendor/spectrum/spectrum.css" rel="stylesheet" />
+
     <style type="text/css">
         #sidebar {
             width: 450px;
@@ -98,6 +100,7 @@
             width: 100px;
             position: fixed;
             padding-left: -35px;
+            height: 100%;
         }
 
         .tm-main {
@@ -116,6 +119,41 @@
             margin-top: 15px;
             margin-bottom: 15px;
         }
+        .fontdemo {
+            padding: 20px 0px 25px 0px;
+            line-height: 100%;
+        }
+
+        #linktype {
+            color: #009dd8;
+        }
+        .cropwrap a {
+        }
+        .cropwrap a:link{
+            text-decoration: none;
+        }
+        .cropwrap a:visited{
+            text-decoration: none;
+        }
+        .cropwrap a:hover{
+            text-decoration: none;
+        }
+        .cropwrap a:active{
+            text-decoration: none;
+        }
+
+       .imgpos-tip {
+            font-size: 12px;
+            background-color: rgba(0,0,0,.5);
+            color: #fff;
+            text-align: center;
+            padding: 5px;
+            position: absolute;
+            line-height: 12px;
+            width: 50px;
+            z-index: 99999;
+        }
+
     </style>
 </head>
 <body>
@@ -141,6 +179,16 @@
                 </div>
 
                 <div class="uk-form-row">
+                    <label class="uk-form-label">倒计时字体</label>
+                    <div class="fontdemo">
+                        8天08时08分08秒
+                    </div>
+                    <select id="fontfamily"></select>
+                    <select id="fontsize"></select>
+                    <input type='text' id="fontcolor"/>
+                </div>
+
+                <div class="uk-form-row">
                     <label class="uk-form-label">定时切换图片</label>
                     <div id="wraptrnsrc" style="display: inline">
                         <!-- <select id="trnsrc" size="1"></select>-->
@@ -156,11 +204,6 @@
                 </div>
                 <div class="uk-form-row" id="tblimg">
                 </div>
-                <div class="uk-form-row">
-                    <label class="uk-form-label">字体设定</label>
-                    <textarea id="mce1" disabled="disabled">font-style</textarea>
-                </div>
-
 
                 <div class="uk-form-row">
                     <div class="uk-form-controls">
@@ -202,27 +245,22 @@
                             <input id="linktype4" value="countdown" type="radio" name="linktype">
                             <label for="linktype4">倒计时</label>
                         </div>
-<!--                         <select id="linktype">-->
-<!--                         <option selected="selected" value="link">链接</option>-->
-<!--                         <option value="button">按钮</option>-->
-<!--                         <option value="anchor">锚点</option>-->
-<!--                         <option value="countdown">倒计时</option>-->
-<!--                         </select>-->
+                    </div>
+                </div>
+
+                <div class="uk-form-row">
+                    <label for="newwin" class="uk-form-label">链接目标</label>
+                    <div class="uk-form-controls" id="linktarget">
+                        <!-- <input id="newwin" value="_self" type="radio" name="radio">-->
+                        <!-- <label for="newwin">当前窗口</label>-->
+                        <!-- <input id="currentwin" value="_blank" type="radio" name="radio" checked="checked">-->
+                        <!-- <label for="currentwin">新建窗口</label>-->
                     </div>
                 </div>
                 <div class="uk-form-row" id="linkwrap" style="display: none">
                     <label for="link" class="uk-form-label">链接地址</label>
                     <div class="uk-form-controls">
                         <textarea placeholder="" rows="3" cols="30" id="link" style="width: 100%">http://</textarea>
-                    </div>
-                </div>
-                <div class="uk-form-row">
-                    <label for="newwin" class="uk-form-label">链接目标</label>
-                    <div class="uk-form-controls" id="linktarget">
-                        <input id="newwin" value="_self" type="radio" name="radio">
-                        <label for="newwin">当前窗口</label>
-                        <input id="currentwin" value="_blank" type="radio" name="radio" checked="checked">
-                        <label for="currentwin">新建窗口</label>
                     </div>
                 </div>
                 <div class="uk-form-row btngroup">

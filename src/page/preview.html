@@ -4,7 +4,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>专场预览</title>
     <link href="../../vendor/uikit/css/uikit.docs.min.css" rel="stylesheet" />
-    <script src="../../vendor/tangram.js"></script>
     <script src="../../vendor/jquery.min.js"></script>
     <link href="../../docs/ccweditor.css" rel="stylesheet" />
     <script src="../../vendor/spin.min.js"></script>
@@ -37,46 +36,15 @@
                 $content.html(content);
             } catch (ex) {
             }
-            //fixArea(true);
-//            $('.imgpos').css('border', 0);
-//            var setDate= function() {
-//                var date = baidu.date.format(new Date(), 'yyyy-MM-dd hh:mm:ss');
-//                $("#marktime").text(date);
-//            }
-//            setDate();
-//            setInterval(setDate, 1000);
-            
+
+            $('.imgpos span').remove();
+
             $('img').load(function () {
                 $content.show();
                 spinner.stop();
             });
         });
 
-        function fixArea(isfix) {
-            var selector = $("area[linktype='countdown']");
-            if (isfix) {
-                selector.each(function () {
-                    var $this = $(this);
-                    var href = $this.attr('href');
-                    var target = $this.attr('linktarget');
-                    if (typeof (target) != "undefined") {
-                        href = '#' + target.replace(/#/ig, "");
-                    }
-                    $this.removeAttr('href');
-                    $this.attr('ahref', href);
-                });
-            } else {
-                selector.each(function () {
-                    var $this = $(this);
-                    var href = $this.attr('ahref');
-                    if (typeof (target) != "undefined") {
-                        href = '#' + target.replace(/#/ig, "");
-                    }
-                    $this.removeAttr('ahref');
-                    $this.attr('href', href);
-                });
-            }
-        }
     </script>
     <script src="../../dist/ccweditor.js"></script>
     <link href="../../dist/ccweditor.css" rel="stylesheet" />

@@ -1,31 +1,39 @@
 ﻿define(['jquery', 'componentutils'], function ($, utils) {
-    var text = ["距离开始时间", "距离结束时间","先开始后结束"];
-    var value = ["0", "1", "3"];
-    var html = '<select>';
-    for (var i = 0; i < value.length; i++) {
-        html += "<option value=\"" + value[i] + "\">" + text[i] + "</option>";
-    }
-    html += '</select>';
-
-    var opts = {
-        callback: function () {
-            return html;
-        }
-    };
-    html = utils.tempRow(opts);
-
+    var html = '<div class=\"uk-alert\">无</div>';
     var exports = {
         html: html,
-        init: function () {
-            if ($(".temprow").length === 1) {
-                $(".temprow").find("select").children("option").eq(0).prop("selected", "selected").trigger("click");
-            }
+//        init: function () {
+//            if ($(".temprow").length === 1) {
+//                $(".temprow").find("select").children("option").eq(0).prop("selected", "selected").trigger("click");
+//            }
+//        },
+        init: function (el) {
+            var opts = {
+                lable: '设定',
+                callback: function () {
+                    var cdsuffixischecked = "";
+                    if (el.attr("cdsuffix") === "false") {
+                        cdsuffixischecked = "";
+                    } else {
+                        cdsuffixischecked = "checked=\"checked\"";
+                    }
+                    var cdsuffixhtml = "&nbsp;<label><input type=\"checkbox\"  " + cdsuffixischecked + " class=\"cdsuffix\"> 保留中文后缀</label>";
+                    return cdsuffixhtml;
+                }
+            };
+            $('.btngroup').before(utils.tempRow(opts));
         },
         show: function (el) {
             if (el !== undefined)
                 if (el.attr('linkicon') !== undefined) {
                     $('.linkicon').prop("checked", "checked");
                 }
+            var $cdsuffix = $('input[class="cdsuffix"]');
+            if (el.attr("cdsuffix") === "false") {
+                $cdsuffix.prop('checked', '');
+            } else {
+                $cdsuffix.prop('checked', 'checked');
+            }
         },
         save: function (el) {
 

@@ -26,7 +26,17 @@
 {
   background: rgba(0,0,0,.0);
 }
-
+.imgpos-tip {
+    font-size: 12px;
+    background-color: rgba(0,0,0,.5);
+    color: #fff;
+    text-align: center;
+    padding: 5px;
+    position: absolute;
+    line-height: 12px;
+    width: 50px;
+    z-index: 99999;
+}
 /*.mce-content-body p{
     height: 100%;
 }

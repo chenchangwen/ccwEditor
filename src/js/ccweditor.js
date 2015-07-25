@@ -111,6 +111,9 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                 },
                 cropwrap: function() {
                     return '<div class="cropwrap" data-mce-style="position:relative;" style="position:relative"></div>';
+                },
+                imgpostip: function(str) {
+                    return '<span class="imgpos-tip">' + str + '</span>';
                 }
             },
             insertimage: function() {
@@ -251,32 +254,30 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     editor.dom.remove(el);
                 });
 
-                //usemap
-                convertbatch(editor.dom.select(classusemap), function(el) {
-                    ccweditor.convert(el);
-                });
-
-                //将.cropwrap有map的转换为a(早些版本是map为主)
-                convertbatch(editor.dom.select(classcropwrap), function(el) {
-                    ccweditor.convert(el);
-                });
-
-                //将img关联的map转换为a
-                convertbatch(editor.dom.select(img), function(el) {
-                    ccweditor.convert(el);
-                });
-
                 //还原border,及超链接,及锚点
-                var restore = function(tag) {
-                    convertbatch(editor.dom.select(tag), function(el) {
-                        ccweditor.convert(el);
+                var restore = function (tag) {
+                    convertbatch(editor.dom.select(tag), function (el) {
+                        //ccweditor.convert(el);
                         var querya = mcequery(el);
                         if (!editor.dom.hasClass(el, "tempanchor") && querya.children(img).length <= 0) {
                             editor.dom.setStyle(el, "border", borderstyle);
+                            var linktype = querya.attr('linktype');
+                            var linkstr='链接';
+                            if (linktype === 'link') {
+                                linkstr = '超链接';
+                            }
+                            else if (linktype === 'button') {
+                                linkstr = '按钮';
+                            }
+                            else if (linktype === 'countdown') {
+                                linkstr = '倒计时';
+                            }
+                            querya.append(ccweditor.template.imgpostip(linkstr));
                         }
                         editor.dom.setAttrib(el, contenteditable, "false");
                     });
                 }
+
                 restore(a);
                 restore(div);
 
@@ -439,10 +440,11 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             relative_urls:true,
             setup: function (editor) {
                 $jq(editor.getElement()).data('index', mceindex++);
-                editor.on("init", function() {
-                    ccweditor.format();
+                editor.on("init", function () {
                     //测试用
-                    //editor.insertContent('<img usemap="mymap" src="https://www.baidu.com/img/bd_logo1.png" />');
+                    editor.insertContent('<div class="cropwrap" style="position:relative"><img src="https://www.baidu.com/img/bd_logo1.png" /><a contenteditable="false" class="imgpos" style="position:absolute;border:2px solid blue;left:328px;top:136px;width:94px;height:94px;" href="http://www.qq.com" linktype="countdown" target="_self" cdsuffix="false"><b style="left:2px;top:2px;"></b><b style="left:2px;top:2px;"></b></a></div>');
+                    ccweditor.format();
+                    
                     var content = editor.getContent();
                     if (content === '') {
                         editor.setContent('<p><br></p>');
@@ -576,7 +578,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                 editor.on("click", function (e) {
                     var tagName = e.target.tagName;
                     var node;
-                    if (tagName === 'A') {
+                    if (tagName === 'A' || tagName ==='SPAN') {
                         node = mcequery(e.target.parentNode).find('img')[0];
                         tinyMCE.activeEditor.selection.select(node);
                         //禁止点击了A打开超链接

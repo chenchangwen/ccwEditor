@@ -1,14 +1,12 @@
 ﻿require(['../global.config'], function () {
-    require(['jquery', 'Jcrop', 'utils', 'component', 'spin', 'uikitextend'], function ($, Jcrop, utils, component, Spinner, uikitextend) {
+    require(['jquery', 'Jcrop', 'utils', 'component', 'spin', 'uikitextend', 'spectrum'], function ($, Jcrop, utils, component, Spinner, uikitextend) {
         $(document).ready(function () {
             //变量声明
             //链接类型对象
             var linktype = {
                 link: [],
                 button: ["youhui", "login"],
-                anchor: [],
-                countdown: ["0", "1", "3"]
-//                countdown: ["距离开始时间", "距离结束时间", "时间循环", "先开始后结束"]
+                anchor: []
             };
             //带有$+变量名,均为jquery对象
             var editor = parent.tinymce.activeEditor,
@@ -25,6 +23,7 @@
                 $trnsrc = $("#trnsrc"),
                 $tblimg = $("#tblimg"),
                 $body = $('body'),
+                $fontdemo = $(".fontdemo"),
                 $floatbtn = $('#floatbtn'),
                 //是否激活隐藏按钮
                 isactivebtnhidden = true,
@@ -40,7 +39,7 @@
                 $editmap = null,
                 //cropwrap是否已经委托
                 isdelegate = false;
-            var fontstyle = "";
+     
             var offsetw = ($(document).width() < $("body").width() ? $(document).width() : $("body").width()),
                   offseth = (document.all ? document.getElementsByTagName("html")[0].offsetHeight : window.innerHeight);
             $(document).ready(function () {
@@ -120,41 +119,71 @@
                 content.init();
                 fixArea(true);
                 renderTransitionPic();
-                tinymce.init({
-                    selector: "#mce1",
-                    fontsize_formats: "20px 22px 24px 26px 30px 32px 34px 36px 38px 40px 42px 44px 46px 48px 50px",
-                    theme: "modern",
-                    width: "100%",
-                    height: 50,
-                    cleanup: true,
-                    //content_css: utils.tinymcepath + "ccweditor.css",
-                    language: "zh_CN",
-                    menu: [],
-                    force_hex_style_colors: true,
-                    plugins: "textcolor colorpicker textpattern",
-                    toolbar: [
-                        "fontselect fontsizeselect forecolor"
-                    ],
-                    relative_urls: false,
-                    valid_elements: "*[*]",
-                    setup: function (editor) {
-                        editor.on("init", function (args) {
-                            editor.setContent("<p><span style=\"" + fontstyle + "\" data-mce-style=\"" + fontstyle + "\">font-style</span></p>");
-                            reWidthHeight();
-                        });
-                    }
-
-                });
-                fontstyle = $img.attr("fontstyle");
-                if (fontstyle != undefined) {
-                    fontstyle = $img.attr("fontstyle").replace(/\$\$/ig, ";");
-                } else {
-                    fontstyle = "";
-                }
+                
                 //倒计时转换小时
                 if ($img.attr("dayhours") === "true") {
                     $dayhours.prop("checked", "checked");
                 }
+
+                //增加字体
+                var html = '';
+                var fontfamily = ['宋体', '楷体', '微软雅黑', '黑体', '新宋体', 'Andale Mono', 'Arial', 'Arial Black', 'Book Antiqua', 'Comic Sans MS', 'Courier New', 'Georgia', 'Helvetica', 'Impact', 'Tahoma', 'Terminal', 'Times New Roman', 'Trebuchet MS', 'Verdana'];
+                for (var i = 0; i < fontfamily.length; i++) {
+                    html += '<option value="' + fontfamily[i] + '">' + fontfamily[i] + '</option>';
+                }
+                var fm = $img.css('font-family') || '';
+                var color = $img.css('color') || '';
+                var fs = $img.css('font-size') || '';
+                
+                $fontdemo.css("font-family", fm);
+                $fontdemo.css("color", color);
+                $fontdemo.css("font-size", fs);
+                var $fm = $("#fontfamily");
+
+                $fm.html(html);
+                $fm.find("option[value=\"" + fm + "\"]").prop("selected", "selected");
+                $fm.change(function () {
+                    $fontdemo.css('font-family', $(this).val());
+                });
+
+                html = '';
+                for (i = 14; i < 52;) {
+                    html += '<option value="' + i + '">' + i + 'px' + '</option>';
+                    i += 2;
+                }
+                var $fs = $("#fontsize");
+                $fs.html(html);
+                $fs.find("option[value='" + fs.replace(/px/, '') + "']").prop("selected", "selected");
+
+                $fs.change(function () {
+                    $fontdemo.css('font-size', $(this).val() + 'px');
+                    $fontdemo.css('line-height', $(this).val() + 'px');
+                });
+
+                $("#fontcolor").spectrum({
+                    showPalette: true,
+                    color: color || "#000",
+                    showInput: true,
+                    preferredFormat: "hex",
+                    hideAfterPaletteSelect: true,
+                    clickoutFiresChange: true,
+                    showButtons: true,
+                    chooseText: "选择",
+                    cancelText: "取消",
+                    palette: [
+                       ["#000", "#444", "#666", "#999", "#ccc", "#eee", "#f3f3f3", "#fff"],
+                       ["#f00", "#f90", "#ff0", "#0f0", "#0ff", "#00f", "#90f", "#f0f"],
+                       ["#f4cccc", "#fce5cd", "#fff2cc", "#d9ead3", "#d0e0e3", "#cfe2f3", "#d9d2e9", "#ead1dc"],
+                       ["#ea9999", "#f9cb9c", "#ffe599", "#b6d7a8", "#a2c4c9", "#9fc5e8", "#b4a7d6", "#d5a6bd"],
+                       ["#e06666", "#f6b26b", "#ffd966", "#93c47d", "#76a5af", "#6fa8dc", "#8e7cc3", "#c27ba0"],
+                       ["#c00", "#e69138", "#f1c232", "#6aa84f", "#45818e", "#3d85c6", "#674ea7", "#a64d79"],
+                       ["#900", "#b45f06", "#bf9000", "#38761d", "#134f5c", "#0b5394", "#351c75", "#741b47"],
+                       ["#600", "#783f04", "#7f6000", "#274e13", "#0c343d", "#073763", "#20124d", "#4c1130"]
+                    ],
+                    change: function (color) {
+                        $fontdemo.css('color', color.toHexString());
+                    }
+                });
             }
 
             //兼容解决: IE下href永远是最顶层
@@ -207,12 +236,12 @@
             function targetHandle(obj, e) {
                 var tagName = e.target.tagName;
                 var html = "",
-                    txt = $.trim(obj.text()),
                     str = linktype["button"][0],
                     value = "";
                 value = $editnote.data('id');
                 value = value == undefined ? "" : value;
                 var linktargetvalue = obj.find("input[type='radio']:checked").val();
+ 
                 //如果是第一次目标对象处理并且保存的值,或者重新选择的值等于'领取优惠券' 
                 if (linktargetvalue === str) {
                     sidebar.temprow.remove();
@@ -221,84 +250,14 @@
                     });
                     obj.parent().parent().after(html);
                 }
-                    //如果是登陆
+                //如果是登陆
                 else if (linktargetvalue === linktype["button"][1]) {
                     sidebar.temprow.remove();
                 }
-                    //如果是倒计时
-                else if (sidebar.linktype.getValue() === "countdown") {
-                    if (tagName === "OPTION") {
-                        var $temprow = $(".temprow");
-                        //除了第一个临时行,其他删除
-                        for (var i = $temprow.length - 1; i > 0; i--) {
-                            if (i != 0) {
-                                $temprow.eq(i).remove();
-                            }
-                        }
-
-                        //循环时间input
-                        var cycledate = getTempRowHtml(function () {
-                            return "<input type=\"text\" class=\"cycledate\" disabled=\"disabled\" id=\"cycledate\" value=\"" + value + "\" style=\"width: 100%\">";
-                        });
-
-                        //如果链接目标是"时间循环"添加以下DOM
-                        if (obj.val() === "2") {
-                            html = "";
-                            html = getTempRowHtml(function () {
-                                for (var i = 0; i <= 23; i++) {
-                                    html += "<option value=\"" + i + "\">" + i + "</option>";
-                                }
-                                return html;
-                            }, "select", "class=\"circulation\"");
-                            $(".temprow:eq(1)").remove();
-                            obj.parent().parent().parent().parent().after(html);
-                            var $circulation = $(".circulation");
-                            var $selectwrap = $circulation.parent();
-                            //添加动态内容
-                            $circulation.before("<lable class=\"uk-form-label\">小时</lable>");
-                            $selectwrap.append("&nbsp;<a class=\"add uk-button uk-button-primary\">添加</a>");
-                            $selectwrap.append("&nbsp;<a class=\"clear uk-button uk-button-danger\">清空</a>");
-                            $selectwrap.parent().after(cycledate);
-                            //绑定事件
-                            $selectwrap.delegate("a", "click", function () {
-                                var $this = $(this);
-                                var $cycledate = $(".cycledate");
-                                if ($this.text() == "添加") {
-                                    var selecting = $circulation.children("option:selected").val();
-                                    var selected = $cycledate.val().split(",");
-                                    if (!utils.isCompareExist(selecting, selected)) {
-                                        $cycledate.val($cycledate.val() + selecting + ",");
-                                    } else {
-                                        uikitextend.uikit.notify({ message: "该小时已经存在!" });
-                                    }
-                                } else {
-                                    $cycledate.val("");
-                                }
-                            });
-                        } else {
-                            //其他链接目标添加"时间类型"
-                            var countdowntype = getTempRowHtml(function () {
-                                html += "<option value=\"hour\">时</option>";
-                                html += "<option value=\"minute\">分</option>";
-                                html += "<option value=\"second\">秒</option>";
-                                return html;
-                            }, "select", "class=\"countdowntype\" id=\"countdowntype\"");
-                            obj.parent().parent().after(countdowntype);
-                            //中文后缀
-                            var cdsuffixischecked = "";
-                            if ($editnote.attr("cdsuffix") === "false") {
-                                cdsuffixischecked = "";
-                            } else {
-                                cdsuffixischecked = "checked=\"checked\"";
-                            }
-                            var cdsuffixhtml = "&nbsp;<label><input type=\"checkbox\"  " + cdsuffixischecked + " class=\"cdsuffix\"> 保留中文后缀</label>";
-                            $("#countdowntype").after(cdsuffixhtml);
-
-                            var $countdowntype = $(".countdowntype");
-                            $countdowntype.before("<label class=\"uk-form-label\" for=\"countdowntype\">时间类型</label>");
-                        }
-                    }
-                }
+//                //如果是倒计时
+//                else if (sidebar.linktype.getValue() === "countdown") {
+//                    
+//                }
             }
 
             var trnpic = [], trndate = [];
@@ -314,7 +273,7 @@
                     trnpic.length = 0;
                     $selecthour.each(function () {
                         var $this = $(this);
-                        if ($this.text() != "选择") {
+                        if ($this.text() !== "选择") {
                             trnpic.push($(this).parent().parent().prev().attr("src"));
                             trndate.push($(this).text());
                         }
@@ -327,53 +286,24 @@
                         $img.removeAttr("trndate");
                         $img.removeAttr("trnpic");
                     }
-
-                    var tempfontstyle = fontstyle.split(";");
-                    tempfontstyle.length = 3;
-                    //字体
-                    var fontfamily = $.trim($("#mceu_0-open").text());
-                    var fontsize = $.trim($("#mceu_1-open").text());
-                    var fontcolor = $("#mceu_2-preview").attr("style");
-                    var font = "";
-                    if (fontfamily == "字体") {
-                        if (tempfontstyle[0] != undefined) {
-                            font += (tempfontstyle[0] || "") + "$$";
-                        } else {
-                            font += "font-family:" + (tempfontstyle[0] || "") + "$$";
-                        }
-                    } else {
-                        font += "font-family:" + fontfamily + "$$";
-                    }
-                    if (fontsize == "字号") {
-                        if (tempfontstyle[1] != undefined) {
-                            font += (tempfontstyle[1] || "") + "$$";
-                        } else {
-                            font += "font-size:" + (tempfontstyle[1] || "") + "$$";
-                        }
-                    } else {
-                        font += "font-size:" + fontsize + "$$";
-                    }
-                    if (fontcolor == undefined) {
-                        if (tempfontstyle[2] != undefined) {
-                            font += (tempfontstyle[2] || "") + "$$";
-                        } else {
-                            font += "color:" + (tempfontstyle[2] || "") + "$$";
-                        }
-                    } else {
-                        font += "color:" + $("#mceu_2-preview").css("background-color").colorHex() + "$$";
-                    }
                     //保存时间
-                    $img.attr("startdate", $startdate.val());
-                    $img.attr("enddate", $enddate.val());
-                    $img.attr("fontstyle", font);
-                    //保存倒计时
-                    if ($dayhours.prop("checked")) {
-                        $img.attr("dayhours", "true");
+                    if ($startdate.val() !== '') {
+                        $img.attr("startdate", $startdate.val());
                     } else {
-                        $img.attr("dayhours", "false");
+                        $img.removeAttr("startdate");
                     }
-                    sidebar.show(0);
+                    if ($enddate.val() !== '') {
+                        $img.attr("enddate", $enddate.val());
+                    } else {
+                        $img.removeAttr("enddate");
+                    }
+                    $img.css("font-family", $fontdemo.css('font-family') || '');
+                    $img.css("color", $fontdemo.css('color') || '');
+                    $img.css("font-size", $fontdemo.css('font-size') || '');
+                    //保存倒计时
+                    $img.attr("dayhours", $dayhours.prop("checked"));
 
+                    sidebar.show(0);
                 });
 
                 var maptrnpic = $img.attr("trnpic") == undefined ? "" : $img.attr("trnpic"), forpic, forpictxt;
@@ -610,6 +540,7 @@
                             };
                             sidebar.setSize();
                         },
+                        animationDelay:10,
                         allowSelect: false
                     }, function () {
                         jcrop_api = this;
@@ -695,21 +626,28 @@
                     }
                     $baritem2.show();
                     $baritem1.hide();
+
                     $floatbtn.css({ "transform": "rotate(720deg)", 'visibility': 'hidden' });
                     isactivebtnhidden = true;
                     sidebar.temprow.remove();
                     $link.val($editnote.attr("href"));
-                    $linktype.find("input[value='" + $editnote.attr("linktype") + "']").prop("checked", "checked").trigger("click");
-                    $linktarget.find('input[value=' + $editnote.attr("target") + ']').prop("checked", "checked").trigger("click");
+                    if ($editnote.attr("linktype")) {
+                        $linktype.find("input[value='" + $editnote.attr("linktype") + "']").prop("checked", "checked").trigger("click");
+                    } else {
+                        $linktype.find('input:eq(0)').prop("checked", "checked").trigger("click");
+                    }
+                    if ($editnote.attr("target")) {
+                        $linktarget.find('input[value=' + $editnote.attr("target") + ']').prop("checked", "checked").trigger("click");
+                    } else {
+                        $linktarget.find('input:eq(0)').prop("checked", "checked").trigger("click");
+                    }
+                    //$linktype.find("input[value='" + $editnote.attr("linktype") + "']").prop("checked", "checked").trigger("click");
                     //锚点/倒计时
-                    if($editnote.attr("linktype")==='anchor')
-                    {
+                    if ($editnote.attr("linktype") === 'anchor') {
                         $linktarget.find("option[value='" + $editnote.attr("href").replace(/#/,'') + "']").prop("selected", "selected").trigger("click");
-                    }else{
+                    } else {
                         $linktarget.find("option[value='" + $editnote.attr("target") + "']").prop("selected", "selected").trigger("click");
                     }
-                    //时间类型
-                    $("#countdowntype").find("option[value='" + $editnote.attr("datetype") + "']").prop("selected", "selected");
                     $sidebar.css("transform", "translateX(-10px)");
                     //设置宽高
                     this.setSize();
@@ -794,7 +732,6 @@
                                 return false;
                             }
                             $("#save").trigger('click');
-
                             //如果父存在DIV,即不是第一次编辑,则删除.
                             if (editor.selection.getNode().parentNode.tagName === "DIV") {
                                 editor.dom.remove(editor.selection.getNode().parentNode);
@@ -870,12 +807,19 @@
                     });
 
                     $("#delete").on("click", function () {
-                        sidebar.node.remove('delete');
-                        if (typeof (jcrop_api) != "undefined") {
-                            jcrop_api.destroy();
-                            delete jcrop_api;
-                            isnewselected = false;
-                        }
+                        jcrop_api.animateTo(
+                          [0,0,0, $img.height()],
+                          function () {
+                              this.release();
+                              sidebar.node.remove('delete');
+                              if (typeof (jcrop_api) != "undefined") {
+                                  jcrop_api.destroy();
+                                  delete jcrop_api;
+                                  isnewselected = false;
+                              }
+                          }
+                        );
+                       
                     });
 
                     $("#save").on("click", function () {
@@ -888,23 +832,24 @@
                     $("#closesidebar").on("click", function () {
                         $("#savehotlink").trigger("click");
                     });
-
-                    //链接类型点击事件 兼容chrome
                     $linktype.delegate('input', 'click', function () {
                         //先删除临时行
                         sidebar.temprow.remove();
                         var $this = $(this),
                             html = "",
                             linkval = $this.val();
+                        
                         //如果相等则禁止输入地址
                         if (linkval === "button" || linkval === "anchor" || linkval === "countdown") {
                             $("#linkwrap").hide();
                         } else {
                             $("#linkwrap").show();
                         }
+                        sidebar.node.setlinkTip(linkval);
 
                         //如果是锚点(读取并生成锚点)
                         if (linkval === "anchor") {
+                            $editnote.find('span').text('锚点');
                             //锚点只读第一个编辑器的
                             var editor1 = parent.tinymce.editors[0];
                             var $anchor = $(editor1.getBody()).find(".tempanchor");
@@ -931,14 +876,13 @@
                                 }
                             } else if (linkval === 'button') {
                                 html = component.button;
-                            }
-                            else if (linkval === 'countdown') {
+                            } else if (linkval === 'countdown') {
                                 html = component.countdown;
                             }
                         }
                         if ($.isPlainObject(html)) {
                             $linktarget.html(html.html);
-                            html.init();
+                            html.init($editnote);
                         } else {
                             $linktarget.html(html);
                         }
@@ -972,6 +916,26 @@
                 },
                 //便条区域
                 node: {
+                    setlinkTip: function (val) {
+                        if ($editnote) {
+                            var str = '';
+                            switch (val) {
+                            case "link":
+                                str = '超链接';
+                                break;
+                            case "button":
+                                str = '按钮';
+                                break;
+                            case "countdown":
+                                str = '倒计时';
+                                break;
+                            case "anchor":
+                                str = '锚点';
+                                break;
+                            }
+                            $editnote.find('span').text(str);
+                        }
+                    },
                     get: function () {
                         var width = (imgpos.w - 6);
                         var height = (imgpos.h - 6);
@@ -984,50 +948,46 @@
                         var imgposposition = "left:" + left + "px;top:" + top + "px;width:" + width + "px;height:" + (imgpos.h - 6) + "px;";
                         var html =
                             "<" + wraptag + " contenteditable=\"false\" class=\"imgpos\" style=\"position:absolute;border:2px solid blue;" + imgposposition + "\"";
-
                         if (linktype === 'link') {
                             html += " href=\"" + $link.val() + "\"";
-                        }
-
-                        if (linktype === 'button') {
-                            if (linktarget === 'youhui') {
-                                html += 'data-id="' + $('.temprow').find('input').val() + '"';
-                            }
                         }
 
                         if (linktype === 'anchor') {
                             html += " href=\"#" + linkvalue + "\"";
                         }
-                        if (linktype === "countdown") {
-                            html += "datetype=\"" + $("#countdowntype").val() + "\"";
-                            if ($(".cycledate").val() != undefined) {
-                                html += "data-id=\"" + $(".cycledate").val() + "\"";
-                            }
-                        }
                         html += " linktype=\"" + linktype + "\"";
                         if (linktype !== 'anchor') {
-                            if (linktype === 'countdown') {
-                                html += " target=\"" + linkvalue + "\"";
-                            }
-                            else
-                                html += " target=\"" + linktarget + "\"";
+                            if (linktarget)
+                            html += " target=\"" + linktarget + "\"";
                         }
-                        if ($("#countdowntype").val() != undefined) {
-                            //中文后缀
-                            if ($(".cdsuffix").prop("checked")) {
-                                html += " cdsuffix=\"true\"";
-                            } else {
-                                html += " cdsuffix=\"false\"";
-                            }
-                            html += " datetype=\"" + $("#countdowntype").val() + "\"";
+                        if ($(".cdsuffix").prop("checked")) {
+                            html += " cdsuffix=\"true\"";
+                        } else {
+                            html += " cdsuffix=\"false\"";
                         }
                         var centerleft = utils.accDiv(width, 2) - 45;
                         var centertop = utils.accDiv(height, 2) - 45;
                         var tipchildstyle = "left:" + centerleft + 'px;top:' + centertop + 'px;';
                         html += ">";
-                        if (linktype === 'link') {
-                            html += '<b style="' + tipchildstyle + '"></b>';
+                        if ($editnote) {
+                            if ($editnote.html() !== '') {
+                                html += $editnote.find('span').prop('outerHTML') || '';
+                            } 
                         }
+                        else {
+                            if (linktype === 'link') {
+                                html += '<span class="imgpos-tip">超链接</span>';
+                                html += '<b style="' + tipchildstyle + '"></b>';
+                            }
+                            else if (linktype === 'button') {
+                                html += '<span class="imgpos-tip">按钮</span>';
+                            }
+                            else if (linktype === 'countdown') {
+                                html += '<span class="imgpos-tip">倒计时</span>';
+                            }
+                        }
+                        
+                        
                         html += "</" + wraptag + ">";
                         return html;
                     },
