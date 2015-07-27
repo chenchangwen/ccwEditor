@@ -67,115 +67,55 @@ var ccweditor = {
     },
     /* 倒计时事件 */
     countdownEvent: function() {
-        var timeEnd, //结束时间
-                 timeDistance, //时间差
-                 cycleTimeEnd; //循环时间
-        var $img = $(".imgpos[linktype=\"countdown\"]:first").parent().children("img");
-        var startdate = $img.attr("startdate");
-        var enddate = $img.attr("enddate");
+        var timeDistance; //时间差
+        var $img = $(".imgpos[linktype='countdown']:first").parent().children("img");
+        var $parent = $img.parent('.cropwrap');
+        var startdate = $parent.attr("startdate");
+        var enddate = $parent.attr("enddate");
         var dayhours = $img.attr("dayhours");
-
+        $img.removeAttr('dayhours');
         if (startdate != undefined) {
-            startdate = new Date($img.attr("startdate").replace(/-/ig, "/"));
+            startdate = new Date(startdate);
         }
         if (enddate != undefined) {
-            enddate = new Date($img.attr("enddate").replace(/-/ig, "/"));
+            enddate = new Date(enddate);
         }
-
-        var fontstyle = $img.attr("fontstyle");
-        if (fontstyle != undefined) {
-            fontstyle = $img.attr("fontstyle").replace(/\$\$/ig, ";");
-        }
+        $parent.removeAttr('startdate').removeAttr('enddate');
 
         $countdown.each(function () {
             var $this = $(this);
-            var linktarget = $this.attr("target") || $this.attr("linktarget"),
-                datetype = $this.attr("datetype"),
-                cdsuffix = $this.attr("cdsuffix");
-            //替换'-'为能被Date对象所处理的字符串
-            date = $this.data("id") == undefined ? "0" : $this.data("id").replace(/-/ig, "/");
-            if (linktarget === "2") {
-                cycleTimeEnd = date.split(",");
-            } else if (linktarget === "0") {
-                timeEnd = startdate;
-            } else if (linktarget === "1") {
-                timeEnd = enddate;
-            }
-
-            var style = $this.attr("style") + (fontstyle === ';font-size:;color:;' ? '' : fontstyle);
-            $this.attr("style", style);
-            if ($this.css("font-size") !== "") {
-                style += "line-height:" + $this.css("font-size");
-            }
-            $this.attr("style", style);
-            var html = "";
-            var issuffix = cdsuffix === "true" ? true : "";
-            switch (datetype) {
-                case "hour":
-                    if (issuffix) {
-                        issuffix = "时";
-                    }
-                    html += "<span class='hour'></span>" + "<span>" + issuffix + "</span>";
-                    break;
-                case "minute":
-                    if (issuffix) {
-                        issuffix = "分";
-                    }
-                    html += "<span class='minute'></span>" + "<span>" + issuffix + "</span>";
-                    break;
-                case "second":
-                    if (issuffix) {
-                        issuffix = "秒";
-                    }
-                    html += "<span class='second'></span>" + "<span>" + issuffix + "</span>";
-                    break;
+            var html = '';
+            html += "<span class='edtip'></span>";
+            if ($this.attr("cdsuffix")) {
+                html += "<span class='edh'></span>" + "<span>时</span>";
+                html += "<span class='edm'></span>" + "<span>分</span>";
+                html += "<span class='eds'></span>" + "<span>秒</span>";
+                $this.removeAttr('cdsuffix');
+            } else {
+                html += "<span class='edh'></span>";
+                html += "<span class='edm'></span>";
+                html += "<span class='eds'></span>";
             }
             $this.html(html);
         });
-
-        var timeHour = $(".hour"),
-            timeMinute = $(".minute"),
-            timeSecond = $(".second");
+        var $hour = $(".edh"),
+            $minute = $(".edm"),
+            $tip = $(".edtip"),
+            $second = $(".eds");
 
         function countDown() {
             //获取当前服务器时间
             var timeNow = serverTime * 1000;
-            if (cycleTimeEnd != undefined) {
-                for (var i = 0; i < cycleTimeEnd.length - 1; i++) {
-                    //活动未开始
-                    if (timeNow <= startdate) {
-                        timeDistance = startdate - timeNow;
-                    }
-                        //活动开始
-                    else if (timeNow > startdate) {
-                        //开始根据循环时间(小时)处理
-                        var timeNowDate = new Date(timeNow);
-                        var timeNowHour = timeNowDate.getHours();
-                        var year = timeNowDate.getFullYear();
-                        var month = timeNowDate.getMonth() + 1;
-                        var day = timeNowDate.getDate();
-                        var cycleHour = parseInt(cycleTimeEnd[i]);
-                        //如果当前时间小于循环时间
-                        //时间循环只要不超过结束时间,用cycleHour构建的时间减去当前时间即可
-                        if (timeNowHour < cycleHour) {
-                            var edate = year + "/" + month + "/" + day + " " + cycleHour + ":00:00";
-                            timeDistance = new Date(edate) - timeNow;
-                            break;
-                        }
-                    }
-                }
+            var tip = '';
+            if (startdate > timeNow && timeNow < enddate || startdate > timeNow && enddate == undefined) {
+                tip = '距离开始时间还有: ';
+                timeDistance = startdate - timeNow;
             }
-                //距离开始时间, 距离结束时间类型
-            else if (timeEnd != undefined) {
-                timeDistance = timeEnd - timeNow;
-            } else {
-                //先开始后结束类型
-                if (timeNow <= startdate) {
-                    timeDistance = startdate - timeNow;
-                } else if (timeNow > startdate) {
-                    timeDistance = enddate - timeNow;
-                }
+            else if (startdate == undefined && timeNow <= enddate || timeNow <= enddate) {
+                tip = '距离结束时间还有: ';
+                timeDistance = enddate - timeNow;
             }
+           
             var intDay, intHour, intMinute, intSecond, maxintHour;
             if (timeDistance >= 0) {
                 // 相减的差数换算成天数   
@@ -202,19 +142,18 @@ var ccweditor = {
                 maxintHour = parseInt(intHour) + (intDay * 24);
                 //如果剩余天数大于1,并且开启天数转换
                 if (intDay > 0 && dayhours === "true" && maxintHour >= 24) {
-                    timeHour.html(intDay + "天 " + intHour);
+                    $hour.html(intDay + "天" + intHour);
                 } else {
                     //intHour = parseInt(intHour) + (intDay * 24);
-                    timeHour.html(maxintHour);
+                    $hour.html(maxintHour);
                 }
-
-                timeMinute.html(intMinute);
-                timeSecond.html(intSecond);
+                $tip.html(tip);
+                $minute.html(intMinute);
+                $second.html(intSecond);
 
                 cdtimeout = setTimeout(countDown, 1000);
                 serverTime += 1;
             } else {
-                //活动结束
                 if (typeof cdtimeout != "undefined")
                     clearTimeout(cdtimeout);
                 $countdown.remove();

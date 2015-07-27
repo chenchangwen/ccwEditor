@@ -8,6 +8,9 @@
                 button: ["youhui", "login"],
                 anchor: []
             };
+            jQuery.browser = {};
+            jQuery.browser.mozilla = /mozilla/.test(navigator.userAgent.toLowerCase()) && !/webkit/.test(navigator.userAgent.toLowerCase());
+            
             //带有$+变量名,均为jquery对象
             var editor = parent.tinymce.activeEditor,
                 $content = $("#content"),
@@ -131,6 +134,7 @@
                 for (var i = 0; i < fontfamily.length; i++) {
                     html += '<option value="' + fontfamily[i] + '">' + fontfamily[i] + '</option>';
                 }
+                
                 var fm = $img.css('font-family') || '';
                 var color = $img.css('color') || '';
                 var fs = $img.css('font-size') || '';
@@ -141,7 +145,14 @@
                 var $fm = $("#fontfamily");
 
                 $fm.html(html);
-                $fm.find("option[value=\"" + fm + "\"]").prop("selected", "selected");
+                var stroption = '';
+                if (jQuery.browser.mozilla) {
+                    stroption = "option[value='" + fm + "']";
+                } else {
+                    stroption = "option[value=\"" + fm + "\"]";
+                }
+                $fm.find(stroption).prop("selected", "selected");
+
                 $fm.change(function () {
                     $fontdemo.css('font-family', $(this).val());
                 });
@@ -288,18 +299,19 @@
                     }
                     //保存时间
                     if ($startdate.val() !== '') {
-                        $img.attr("startdate", $startdate.val());
+                        $cropwrap.attr("startdate", $startdate.val());
                     } else {
-                        $img.removeAttr("startdate");
+                        $cropwrap.removeAttr("startdate");
                     }
                     if ($enddate.val() !== '') {
-                        $img.attr("enddate", $enddate.val());
+                        $cropwrap.attr("enddate", $enddate.val());
                     } else {
-                        $img.removeAttr("enddate");
+                        $cropwrap.removeAttr("enddate");
                     }
-                    $img.css("font-family", $fontdemo.css('font-family') || '');
-                    $img.css("color", $fontdemo.css('color') || '');
-                    $img.css("font-size", $fontdemo.css('font-size') || '');
+                    $cropwrap.css("font-family", $fontdemo.css('font-family') || '');
+                    $cropwrap.css("color", $fontdemo.css('color') || '');
+                    $cropwrap.css("font-size", $fontdemo.css('font-size') || '');
+                    $cropwrap.attr('data-mce-style', $cropwrap.attr('style'));
                     //保存倒计时
                     $img.attr("dayhours", $dayhours.prop("checked"));
 
@@ -902,8 +914,8 @@
 
                 //加载时间
                 loadDate: function () {
-                    var startdate = $img.attr("startdate");
-                    var enddate = $img.attr("enddate");
+                    var startdate = $cropwrap.attr("startdate");
+                    var enddate = $cropwrap.attr("enddate");
                     $startdate.val(startdate);
                     $enddate.val(enddate);
                 },
