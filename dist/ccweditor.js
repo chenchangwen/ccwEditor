@@ -2,12 +2,56 @@
     showGoodIdAry = [];
 var patterns = [/goods_id=\d+/, /\d+.html/ig, /goods-\d+/],
     $imgpos,
-    $countdown,
+    $cropwrap,
+    $cropwraptab,
+    isshow = false,
     serverTime = new Date().getTime() / 1000;
 var ccweditor = {
+    /* cropwrap事件 */
+    cropWrapEvent: function () {
+        $cropwrap.each(function () {
+            var timenow = serverTime * 1000;
+            var $this = $(this);
+            var showdate = $this.attr('showdate');
+            var hidedate = $this.attr('hidedate');
+            /* 没有设置 开始,结束时间 */
+            if (showdate === undefined && hidedate === undefined) {
+                isshow = true;
+            } else {
+                if (showdate != undefined && hidedate === undefined) {
+                    if (new Date(showdate) < timenow) {
+                        isshow = true;
+                    }
+                }
+                if (hidedate != undefined && showdate === undefined) {
+                    if (timenow < new Date(hidedate)) {
+                        isshow = true;
+                    }
+                }
+                if (showdate != undefined && hidedate != undefined) {
+                    isshow = new Date(showdate) < timenow && timenow < new Date(hidedate);
+                }
+            }
+            if (isshow) {
+                $this.find('img').show();
+            } else {
+                $this.find('img').hide();
+            }
+            //$this.removeAttr('showdate').removeAttr('hidedate');
+            ccweditor.countdownEvent($this);
+        });
+    },
+    /* 容器事件*/
+    tabContainerEvent: function() {
+        $(".tabcontainer").each(function() {
+            var $this = $(this);
+            var $alltab = $('div[tabcontainer=' + $this.attr('id') + '][tabname]');
+            $this.append($alltab);
+        });
+    },
     /* 图片热点事件 */
-    imgPosEvent: function() {
-        $imgpos.each(function(i) {
+    imgPosEvent: function () {
+        $imgpos.each(function (i) {
             var $this = $(this);
             /* 显示a标签 */
             if ($this[0].tagName === "A" || $this.attr("linktype") === "countdown") {
@@ -66,103 +110,182 @@ var ccweditor = {
         });
     },
     /* 倒计时事件 */
-    countdownEvent: function() {
+    countdownEvent: function (cropwrap) {
         var timeDistance; //时间差
-        var $img = $(".imgpos[linktype='countdown']:first").parent().children("img");
-        var $parent = $img.parent('.cropwrap');
-        var startdate = $parent.attr("startdate");
-        var enddate = $parent.attr("enddate");
-        var dayhours = $img.attr("dayhours");
-        $img.removeAttr('dayhours');
+        var $this = cropwrap;
+        var startdate = $this.attr("startdate");
+        var enddate = $this.attr("enddate");
+        var dayhours = $this.attr("dayhours");
+        $this.removeAttr('dayhours');
         if (startdate != undefined) {
             startdate = new Date(startdate);
         }
         if (enddate != undefined) {
             enddate = new Date(enddate);
         }
-        $parent.removeAttr('startdate').removeAttr('enddate');
+        $this.data('startdate', startdate).data('enddate', enddate);
+        $this.removeAttr('startdate').removeAttr('enddate');
 
+        var $countdown = $this.find(".imgpos[linktype='countdown']");
         $countdown.each(function () {
             var $this = $(this);
             var html = '';
+            var iscdsuffix = false;
             html += "<span class='edtip'></span>";
-            if ($this.attr("cdsuffix")) {
+            if ($this.attr("cdsuffix") === 'true') {
                 html += "<span class='edh'></span>" + "<span>时</span>";
                 html += "<span class='edm'></span>" + "<span>分</span>";
                 html += "<span class='eds'></span>" + "<span>秒</span>";
-                $this.removeAttr('cdsuffix');
+                iscdsuffix = true;
             } else {
                 html += "<span class='edh'></span>";
                 html += "<span class='edm'></span>";
                 html += "<span class='eds'></span>";
+                $this.data('cdsuffix', 'false');
             }
+            $this.removeAttr('cdsuffix');
             $this.html(html);
+            $this.data('cdsuffix', iscdsuffix);
         });
-        var $hour = $(".edh"),
-            $minute = $(".edm"),
-            $tip = $(".edtip"),
-            $second = $(".eds");
+        $this.data('time', serverTime);
+        var $hour = $this.find(".edh"),
+        $minute = $this.find(".edm"),
+        $tip = $this.find(".edtip"),
+        $second = $this.find(".eds");
 
         function countDown() {
-            //获取当前服务器时间
-            var timeNow = serverTime * 1000;
+            var timenow = cropwrap.data('time') * 1000;
+            var cdsuffix = $hour.parent().data("cdsuffix");
             var tip = '';
-            if (startdate > timeNow && timeNow < enddate || startdate > timeNow && enddate == undefined) {
+            startdate = cropwrap.data('startdate');
+            enddate = cropwrap.data('enddate');
+            if (startdate > timenow && timenow < enddate || startdate > timenow && enddate == undefined) {
                 tip = '距离开始时间还有: ';
-                timeDistance = startdate - timeNow;
+                timeDistance = startdate - timenow;
             }
-            else if (startdate == undefined && timeNow <= enddate || timeNow <= enddate) {
+            else if (startdate == undefined && timenow <= enddate || timenow <= enddate) {
                 tip = '距离结束时间还有: ';
-                timeDistance = enddate - timeNow;
+                timeDistance = enddate - timenow;
             }
-           
-            var intDay, intHour, intMinute, intSecond, maxintHour;
+
+            var day, hour, minute, second, maxhour;
             if (timeDistance >= 0) {
                 // 相减的差数换算成天数   
-                intDay = Math.floor(timeDistance / 86400000);
-                timeDistance -= intDay * 86400000;
+                day = Math.floor(timeDistance / 86400000);
+                timeDistance -= day * 86400000;
                 // 相减的差数换算成小时
-                intHour = Math.floor(timeDistance / 3600000);
+                hour = Math.floor(timeDistance / 3600000);
                 //alert(intHour)
-                timeDistance -= intHour * 3600000;
+                timeDistance -= hour * 3600000;
                 // 相减的差数换算成分钟   
-                intMinute = Math.floor(timeDistance / 60000);
-                timeDistance -= intMinute * 60000;
+                minute = Math.floor(timeDistance / 60000);
+                timeDistance -= minute * 60000;
                 // 相减的差数换算成秒数  
-                intSecond = Math.floor(timeDistance / 1000); //判断小时小于10时，前面加0进行占位
-                if (intHour < 10)
-                    intHour = "0" + intHour;
+                second = Math.floor(timeDistance / 1000); //判断小时小于10时，前面加0进行占位
+                if (hour < 10)
+                    hour = "0" + hour;
                 // 判断分钟小于10时，前面加0进行占位      
-                if (intMinute < 10)
-                    intMinute = "0" + intMinute;
+                if (minute < 10)
+                    minute = "0" + minute;
                 // 判断秒数小于10时，前面加0进行占位 
-                if (intSecond < 10)
-                    intSecond = "0" + intSecond;
+                if (second < 10)
+                    second = "0" + second;
                 //转换后:最大小时
-                maxintHour = parseInt(intHour) + (intDay * 24);
+                maxhour = parseInt(hour) + (day * 24);
                 //如果剩余天数大于1,并且开启天数转换
-                if (intDay > 0 && dayhours === "true" && maxintHour >= 24) {
-                    $hour.html(intDay + "天" + intHour);
+                //if (day > 0 && dayhours === "true" && maxhour >= 24) {
+                if (day > 0 && maxhour >= 24) {
+                    $hour.html(day + "天" + hour);
+                    //if (cdsuffix === 'true') {
+                    //    $hour.html(day + "天" + hour);
+                    //} else {
+                    //    $hour.html(day + "天 " + hour + ' ');
+                    //}
                 } else {
+                    $hour.html(maxhour);
                     //intHour = parseInt(intHour) + (intDay * 24);
-                    $hour.html(maxintHour);
+                    //if (cdsuffix === 'true') {
+                    //    $hour.html(maxhour);
+                    //} else {
+                    //    $hour.html(maxhour + ':');
+                    //}
                 }
-                $tip.html(tip);
-                $minute.html(intMinute);
-                $second.html(intSecond);
+                $tip.html(tip + ' ');
+                $minute.html(minute);
+                $second.html(second);
+                //if (cdsuffix === 'true') {
+                //    $tip.html(tip);
+                //    $minute.html(minute);
+                //    $second.html(second);
+                //} else {
+                //    $tip.html(tip + ' ');
+                //    $minute.html(minute);
+                //    $second.html(second);
+                //}
 
-                cdtimeout = setTimeout(countDown, 1000);
-                serverTime += 1;
+                var time = cropwrap.data('time') + 1;
+                cropwrap.data('time', time);
+                /* 多实例 所以必须 以此命名 */
+                cropwrap['cdtimeout'] = setTimeout(countDown, 1000);
+
             } else {
-                if (typeof cdtimeout != "undefined")
-                    clearTimeout(cdtimeout);
-                $countdown.remove();
+                if (typeof cropwrap['cdtimeout'] != "undefined")
+                    clearTimeout(cropwrap['cdtimeout']);
+                $this.find(".imgpos[linktype='countdown']").remove();
             }
         }
         countDown();
     },
+    /* tabshow事件 */
+    tabShowEvent: function () {
+        var $tabshow = $('.cropwrap[tabshow="true"]');
+        $tabshow.each(function () {
+            var $this = $(this);
+            var $tabcontainer = $("#" + $this.attr('tabcontainer'));
+            var $containertab = $tabcontainer.find('div[tabname="' + $this.attr('tabtarget') + '"]');
+            if ($containertab.length === 0) {
+                $tabcontainer.append($this);
+            }
+            $tabcontainer.css('display', 'block');
+            $tabcontainer.find('div').hide();
+            $this.show();
+        });
+    },
+    /* tab事件 */
+    tabEvent: function () {
+        var $tabtarget = $('div[tabtarget]');
+        $tabtarget.css('display', 'block');
+        var clickhover = function (obj) {
+            var $this = obj;
+            var tabtarget = $this.attr('tabtarget');
+            var $tab = $('div[tabname="' + tabtarget + '"]');
+            var $tabcontainer = $("#" + $tab.attr('tabcontainer'));
+            var $containertab = $tabcontainer.find('div[tabname="' + tabtarget + '"]');
+            if ($containertab.length === 0) {
+                $tabcontainer.append($tab);
+            }
+            $tabcontainer.find('div').hide();
+            $tab.show();
+            $tab.find('*').show();
+        }
+        $tabtarget.each(function () {
+            var $this = $(this);
+            var tabaction = $this.attr('tabaction');
+            if (tabaction === 'click') {
+                $this.on('click', function () {
+                    clickhover($(this));
+                });
+            }
+            else if (tabaction === 'hover') {
+                $this.on('mouseover', function () {
+                    clickhover($(this));
+                });
+            }
+        });
+
+    },
     /* 显示商品图片提示 */
-    showGoodPicTip: function() {
+    showGoodPicTip: function () {
         if (goodIdAry.length === 0)
             return false;
         var query = {
@@ -182,7 +305,7 @@ var ccweditor = {
                 url: options.url,
                 data: options.data,
                 type: options.type,
-                success: function(msg) {
+                success: function (msg) {
                     if (typeof cb == "function") {
                         cb(msg);
                     }
@@ -191,7 +314,7 @@ var ccweditor = {
         }
 
         /* 请求是否显示图片id的商品 */
-        requestData(query, function(response) {
+        requestData(query, function (response) {
             var json = $.parseJSON(response);
             if (json.data != undefined) {
                 var jsondata = json.data;
@@ -208,7 +331,7 @@ var ccweditor = {
                         };
                         /* 遍历需要显示的id数组 */
                         for (i = 0, len = showGoodIdAry.length; i < len; i++) {
-                            $(".imgpos").each(function() {
+                            $(".imgpos").each(function () {
                                 var $this = $(this);
                                 var href = $this.attr("href");
                                 if (href) {
@@ -227,19 +350,27 @@ var ccweditor = {
         });
     },
     /* dom缓存 */
-    domCache: function() {
+    domCache: function () {
         $imgpos = $(".imgpos");
-        $countdown = $(".imgpos[linktype='countdown']");
+        $cropwrap = $('.cropwrap');
+        $cropwraptab = $('.cropwraptab');
     },
     /* 绑定事件 */
     bindEvents: function () {
-        ccweditor.trnpicEvent();
+        //ccweditor.trnpicEvent();
         ccweditor.imgPosEvent();
-        ccweditor.countdownEvent();
+        ccweditor.cropWrapEvent();
+        ccweditor.tabContainerEvent();
+        ccweditor.tabEvent();
+    },
+    /* 初始化 */
+    init: function () {
+
     },
     /* 构造方法 */
-    struc: function() {
-        $(document).ready(function() {
+    struc: function () {
+        $(document).ready(function () {
+            ccweditor.init();
             ccweditor.domCache();
             ccweditor.bindEvents();
         });

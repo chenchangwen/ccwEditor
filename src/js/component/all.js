@@ -4,15 +4,17 @@
         button: "../component/button",
         regexp: "../component/regexp",
         countdown: "../component/countdown",
+        tab: "../component/tab",
         componentutils: "../component/utils"
     }
 });
-define(["link", "button", "regexp", "countdown"], function (ccwlink, ccwbutton, ccwregexp, ccwcountdown) {
+define(["link", "button", "regexp", "countdown",'tab'], function (ccwlink, ccwbutton, ccwregexp, ccwcountdown,ccwtab) {
     var exports = {
         link: ccwlink,
         button: ccwbutton,
         regexp: ccwregexp,
-        countdown:ccwcountdown,
+        countdown: ccwcountdown,
+        tab: ccwtab,
         show: function (el) {
             callFn('show',el);
         },

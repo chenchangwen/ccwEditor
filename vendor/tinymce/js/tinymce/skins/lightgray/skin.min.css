@@ -2077,6 +2077,13 @@ i.mce-i-backcolor {
    background-image: url(images/mupload.png);
 }
 
+.mce-i-btntab {
+   background-image: url(images/tab.png);
+}
+.mce-i-btnvideo {
+   background-image: url(images/video.png);
+}
 .mce-i-newdocument {
    background-image: url(images/newdocument.png);
 }
+

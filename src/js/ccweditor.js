@@ -61,7 +61,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             zhTitle3 = '完成',
             zhTitle4 = '锚点',
             zhTitle5 = '编辑图片(双击区域编辑,可点击其他区域快速保存)',
-
+            zhTitle6 = 'TAB容器',
             zhTip1 = '插入/更换图片',
             zhTip2 = '多图上传',
             zhTip3 = '插入锚点',
@@ -70,7 +70,8 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             zhTip6 = '使用帮助',
             zhTip7 = '转换为切换图片',
             zhTip8 = '编辑图片',
-
+            zhTip9 = 'TAB容器',
+            zhTip10 = '插入视频',
             display = 'display',
             inline = 'inline',
             linktype = 'linktype',
@@ -116,7 +117,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     return '<span class="imgpos-tip">' + str + '</span>';
                 }
             },
-            insertimage: function() {
+            insertimage: function () {
                 if ($jq(tinymce.activeEditor.selection.getNode()).hasClass(imgpos)) {
                     alert(zhMsg1);
                     return false;
@@ -172,6 +173,21 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     onsubmit: function(e) {
                         mcequery(ccweditor.getParents()).remove();
                         tinymce.activeEditor.execCommand("mceInsertContent", false, thisobj.template.p("<a class=\"tempanchor\" id=\"" + e.data.name + "\"></a>"));
+                    }
+                });
+            },
+            inserttab: function () {
+                if ($jq(tinymce.activeEditor.selection.getNode()).hasClass(imgpos)) {
+                    alert(zhMsg1);
+                    return false;
+                }
+                var thisobj = this;
+                tinymce.activeEditor.windowManager.open({
+                    title: zhTitle6,
+                    body: { type: "textbox", name: "name", size: 40, label: "Name" },
+                    onsubmit: function (e) {
+                        mcequery(ccweditor.getParents()).remove();
+                        tinymce.activeEditor.execCommand("mceInsertContent", false, thisobj.template.p("<div class=\"tabcontainer\" id=\"" + e.data.name + "\"></div>"));
                     }
                 });
             },
@@ -260,19 +276,19 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                         //ccweditor.convert(el);
                         var querya = mcequery(el);
                         if (!editor.dom.hasClass(el, "tempanchor") && querya.children(img).length <= 0) {
-                            editor.dom.setStyle(el, "border", borderstyle);
                             var linktype = querya.attr('linktype');
-                            var linkstr='链接';
-                            if (linktype === 'link') {
-                                linkstr = '超链接';
+                            if (linktype != undefined) {
+                                var linkstr = '链接';
+                                if (linktype === 'link') {
+                                    linkstr = '超链接';
+                                } else if (linktype === 'button') {
+                                    linkstr = '按钮';
+                                } else if (linktype === 'countdown') {
+                                    linkstr = '倒计时';
+                                }
+                                querya.append(ccweditor.template.imgpostip(linkstr));
+                                editor.dom.setStyle(el, "border", borderstyle);
                             }
-                            else if (linktype === 'button') {
-                                linkstr = '按钮';
-                            }
-                            else if (linktype === 'countdown') {
-                                linkstr = '倒计时';
-                            }
-                            querya.append(ccweditor.template.imgpostip(linkstr));
                         }
                         editor.dom.setAttrib(el, contenteditable, "false");
                     });
@@ -396,7 +412,6 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             },
             //清理
             clean: function (el) {
-                console.log(el)
                 for (var i = 0, len = el.length; i < len; i++) {
                     var $jqel = $jq(el[i]);
                     if ($jqel.prop('tagName') === "IMG") {
@@ -428,21 +443,21 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
             cleanup: true,
             object_resizing: false,
             plugins: [
-                "code fullscreen link",
+                "code fullscreen link media",
                 "save contextmenu"
             ],
             menu: {},
             content_css: tinymcepath + "src/css/ccweditor.css",
-            contextmenu: "insertAnchore | hotlink | convertpic | insertpic | preview | fullscreen |",
+            contextmenu: "insertAnchor | hotlink | convertpic | insertpic | preview | fullscreen |",
             language: "zh_CN",
-            toolbar: "undo redo newdocument link btnanchor btninsertimage btnmupload btnpreview code btnfullscreen btndocument",
+            toolbar: "undo redo newdocument link btnanchor btninsertimage btnmupload btnpreview code btnfullscreen btntab btnvideo btndocument",
             valid_elements: "*[*]",
             relative_urls:true,
             setup: function (editor) {
                 $jq(editor.getElement()).data('index', mceindex++);
                 editor.on("init", function () {
-                    //测试用
-                    editor.insertContent('<div class="cropwrap" style="position:relative"><img src="https://www.baidu.com/img/bd_logo1.png" /><a contenteditable="false" class="imgpos" style="position:absolute;border:2px solid blue;left:328px;top:136px;width:94px;height:94px;" href="http://www.qq.com" linktype="countdown" target="_self" cdsuffix="false"><b style="left:2px;top:2px;"></b><b style="left:2px;top:2px;"></b></a></div>');
+                    ////测试用
+                    //editor.insertContent('<p style="display: inline;"></p><p style="display: inline;"></p><div class="tabcontainer" id="tb1" contenteditable="false"></div><div class="tabcontainer" id="tb2" contenteditable="false"></div><p style="display: inline;"></p><p style="display: inline;"></p><p style="display: inline;"><img src="https://www.baidu.com/img/bd_logo1.png" /></p><p style="display:inline"><img style="display: block;" src="http://pcstatics.shenba.com/assets/img/logo.3da38afa33.png" /></p>');
                     ccweditor.format();
                     
                     var content = editor.getContent();
@@ -505,6 +520,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     }
                 });
 
+
                 editor.addButton("btnpreview", {
                     icon: "btnpreview",
                     tooltip: zhTip4,
@@ -526,6 +542,22 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     tooltip: zhTip6,
                     onclick: function() {
                         window.open(tinymcepath + "src/page/document.html");
+                    }
+                });
+
+                editor.addButton("btntab", {
+                    icon: "btntab",
+                    tooltip: zhTip9,
+                    onclick: function () {
+                        ccweditor.inserttab();
+                    }
+                });
+
+                editor.addButton("btnvideo", {
+                    icon: "btnvideo",
+                    tooltip: zhTip10,
+                    onclick: function () {
+                        
                     }
                 });
 
@@ -592,7 +624,7 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                     }
                 });
 
-                editor.on("dblclick", function(e) {
+                editor.on("dblclick", function (e) {
                     var tagName = e.target.tagName;
                     if (tagName === 'IMG') {
                         tinyMCE.activeEditor.selection.select(e.target);
@@ -702,7 +734,6 @@ require(["jquery", "utils", "tinymce"], function ($, utils) {
                         }
                     });
                 }
-                return false;
                 this.submit();
             });
         });

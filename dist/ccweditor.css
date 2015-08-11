@@ -21,3 +21,18 @@
     text-decoration: none;
     outline: 0 none;
 }
+
+.cropwrap .imgpos {
+    text-decoration: none;
+    outline: none;
+    border: 0 none !important;
+}
+
+/*.cropwraptab {
+    display: none;
+}*/
+
+.tempcontainer {
+    display: none;
+}
+

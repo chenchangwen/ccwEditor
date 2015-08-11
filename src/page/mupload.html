@@ -65,28 +65,33 @@
                                         }
                                         editor.dom.insertAfter(el, insertnode);
                                     }
-                                    else
-                                    if (focusNode.tagName === 'P' || selectNode.tagName === 'P' || selectNode.tagName === 'BODY') {
-                                        parent.tinymce.get(parent.tinymce.activeEditor.id).execCommand('mceInsertContent', false, contentp);
+                                    else if (focusNode) {
+                                        if (focusNode.tagName === 'P' || selectNode.tagName === 'P' || selectNode.tagName === 'BODY') {
+                                            parent.tinymce.get(parent.tinymce.activeEditor.id).execCommand('mceInsertContent', false, contentp);
+                                        }
+                                    } else
+                                    //如果当前选择了一个图片
+                                    if (selectNode.tagName === 'IMG') {
+                                        editor.selection.setContent(str);
                                     }
-                                    else
-                                        //如果当前选择了一个图片
-                                        if (selectNode.tagName === 'IMG') {
-                                            editor.selection.setContent(str);
-                                        }
-                                            //如果当前是一个P,并且没有图片,并且父亲是一个BODY
-                                        else if (focusNode.tagName === 'P') {
-                                            if ($(focusNode).find('img').length <= 0) {
-                                                if (focusNode.parentNode.tagName === 'BODY') {
-                                                    editor.dom.remove(focusNode);
-                                                    editor.selection.setContent(contentp);
-                                                }
-                                            } else {
-                                                //在后面插入图片
-                                                el = editor.dom.create('p', { style: 'display:inline' }, str);
-                                                editor.dom.insertAfter(el, editor.selection.getNode());
+                                    //如果当前是一个P,并且没有图片,并且父亲是一个BODY
+                                    else if (focusNode.tagName === 'P') {
+                                        if ($(focusNode).find('img').length <= 0) {
+                                            if (focusNode.parentNode.tagName === 'BODY') {
+                                                editor.dom.remove(focusNode);
+                                                editor.selection.setContent(contentp);
                                             }
+                                        } else {
+                                            //在后面插入图片
+                                            el = editor.dom.create("p", { style: "display:inline" }, str);
+                                            var node = editor.selection.getNode();
+                                            if (node.tagName === 'BODY') {
+                                                parent.tinymce.get(parent.tinymce.activeEditor.id).execCommand("mceInsertContent", false, contentp);
+                                            }
+                                            else
+                                                editor.dom.insertAfter(el, editor.selection.getNode());
                                         }
+                                    }
                                 }
                                 break;
                             }

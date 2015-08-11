@@ -25,8 +25,8 @@
         },
         show: function (el) {
             if (el !== undefined)
-                if (el.attr('linkicon') !== undefined) {
-                    $('.linkicon').prop("checked", "checked");
+                if (el.attr('cdsuffix') !== undefined) {
+                    $('.cdsuffix').prop("checked", "checked");
                 }
             var $cdsuffix = $('input[class="cdsuffix"]');
             if (el.attr("cdsuffix") === "false") {

@@ -22,7 +22,6 @@
             var width;
             var height;
             var cloneimg;
-            debugger;
 
             if (tabindex == 1) {
                 var pattern = /^[0-9]*[1-9][0-9]*$/;
@@ -30,17 +29,24 @@
                     if (!pattern.test($width.val())) {
                         uikitextend.uikit.notify({ message: "宽度:请输入正确的数字!" });
                         return false;
+                    } else {
+                        width = $width.val();
+                        style += " width='" + $width.val() + "'";
+                        if (width) {
+                            style += " width='" + $width.val() + "'";
+                        }
                     }
-                    //style += " width='" + $width.val() + "'";
-                    width = $width.val();
                 }
                 if ($height.val() != "0") {
                     if (!pattern.test($height.val())) {
                         uikitextend.uikit.notify({ message: "高度:请输入正确的数字!" });
                         return false;
+                    } else {
+                        height = $height.val();
+                        if (height) {
+                            style += " height='" + $height.val() + "'";
+                        }
                     }
-                    //style += " height='" + $height.val() + "'";
-                    height = $height.val();
                 }
             }
             if (imgsrc == undefined) {
@@ -72,21 +78,26 @@
                             insertnode = editor.selection.getNode();
                         }
                         editor.dom.insertAfter(el, insertnode);
-                    } else if (focusNode.tagName === "P" || selectNode.tagName === "P" || selectNode.tagName === "BODY") {
-                        parent.tinymce.get(parent.tinymce.activeEditor.id).execCommand("mceInsertContent", false, contentp);
-                    }
-                        //如果当前是一个P,并且没有图片,并且父亲是一个BODY
-                    else if (focusNode.tagName === "P") {
-                        if ($(focusNode).find("img").length <= 0) {
-                            if (focusNode.parentNode.tagName === "BODY") {
-                                editor.dom.remove(focusNode);
-                                editor.selection.setContent(contentp);
+                    } else if (focusNode) {
+                        if (focusNode.tagName === "P" || selectNode.tagName === "P" || selectNode.tagName === "BODY") {
+                            parent.tinymce.get(parent.tinymce.activeEditor.id).execCommand("mceInsertContent", false, contentp);
+                        } else if (focusNode.tagName === "P") {
+                            if ($(focusNode).find("img").length <= 0) {
+                                if (focusNode.parentNode.tagName === "BODY") {
+                                    editor.dom.remove(focusNode);
+                                    editor.selection.setContent(contentp);
+                                }
                             }
-                        } else {
-                            //在后面插入图片
-                            el = editor.dom.create("p", { style: "display:inline" }, str);
-                            editor.dom.insertAfter(el, editor.selection.getNode());
                         }
+                    } else {
+                        //在后面插入图片
+                        el = editor.dom.create("p", { style: "display:inline" }, str);
+                        var node = editor.selection.getNode();
+                        if (node.tagName === 'BODY') {
+                            parent.tinymce.get(parent.tinymce.activeEditor.id).execCommand("mceInsertContent", false, contentp);
+                        }
+                        else
+                        editor.dom.insertAfter(el, editor.selection.getNode());
                     }
                 }
             }

@@ -1,5 +1,5 @@
 ﻿/*锚点*/
-.mce-item-anchor {
+.tempanchor {
     -moz-user-modify: read-only;
     -moz-user-select: all;
     background: url('../../vendor/tinymce/js/tinymce/skins/lightgray/img/anchor.png') no-repeat scroll center center;
@@ -9,6 +9,19 @@
     height: 19px !important;
     width: 19px !important;
 }
+
+.tabcontainer {
+    -moz-user-modify: read-only;
+    -moz-user-select: all;
+    background: url('../../vendor/tinymce/js/tinymce/skins/lightgray/img/tab.png') no-repeat scroll center center;
+    border: 1px dotted #3a3a3a;
+    cursor: default;
+    display: inline-block;
+    height: 19px !important;
+    width: 19px !important;
+}
+
+
 .mce-content-body img[data-mce-selected], hr[data-mce-selected] {
     outline: 3px solid red;
     resize: none;

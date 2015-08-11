@@ -108,6 +108,17 @@ define(['jquery', 'jqextend'], function ($) {
             }
         }
     }
+    exports.random = function (num, from, to) {
+        var arr = [];
+        for (var i = from; i <= to; i++)
+            arr.push(i);
+        arr.sort(function () {
+            return 0.5 - Math.random();
+        });
+        arr.length = num;
+        return arr.toString().replace(/,/g, '');
+    }
+
     return exports;
 });
 

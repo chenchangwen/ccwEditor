@@ -153,6 +153,9 @@
             width: 50px;
             z-index: 99999;
         }
+       .tabnamewrap {
+           display: none;
+       }
 
     </style>
 </head>
@@ -165,53 +168,82 @@
             <h3 class="uk-panel-title" id="paneltitle">当前图片设定</h3>
             <form class="uk-form uk-form-stacked" id="form1">
                 <div class="uk-form-row">
-                    <label class="uk-form-label">倒计时</label>
+                    <label class="uk-form-label">TAB</label>
                     <div class="uk-form-controls">
-                        <label>开始</label>
-                        <input type="text" id="startdate" onfocus=" WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss', maxDate: '#F{$dp.$D(\'enddate\')||\'2020-10-01\'}' }) " style="width: 165px" />
-                        <label>结束</label>
-                        <input type="text" id="enddate" onfocus=" WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss', minDate: '#F{$dp.$D(\'startdate\')}', maxDate: '2020-10-01' }) " style="width: 165px" />
+                        <label>容器:</label>
+                        <select id="tabcontainer" style="width: 165px">
+
+                        </select>
+                        <span class="tabnamewrap">
+                            <label>名称:</label>
+                            <input type="text" style="width: 165px" maxlength="10" id="tabname" />
+                        </span>
+                    </div>
+                    
+                </div>
+                <div class="uk-form-row tabnamewrap">
+                    <div class="uk-form-controls tabnamewrap">
+                        <label><input type="checkbox" id="tabshow">默认显示</label>
                     </div>
                 </div>
 
-                <div class="uk-form-row">
-                    <label><input type="checkbox" id="dayhours">超过24小时转换为天</label>
-                </div>
-
-                <div class="uk-form-row">
-                    <label class="uk-form-label">倒计时字体</label>
-                    <div class="fontdemo">
-                        8天08时08分08秒
+                    <div class="uk-form-row">
+                        <label class="uk-form-label">显示时间</label>
+                        <div class="uk-form-controls">
+                            <label>开始:</label>
+                            <input type="text" id="showdate" onfocus=" WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss', maxDate: '#F{$dp.$D(\'hidedate\')||\'2030-10-01\'}' }) " style="width: 165px" />
+                            <label>结束:</label>
+                            <input type="text" id="hidedate" onfocus=" WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss', minDate: '#F{$dp.$D(\'showdate\')}', maxDate: '2030-10-01' }) " style="width: 165px" />
+                        </div>
                     </div>
-                    <select id="fontfamily"></select>
-                    <select id="fontsize"></select>
-                    <input type='text' id="fontcolor"/>
-                </div>
+                    <div class="uk-form-row">
+                        <label class="uk-form-label">倒计时时间</label>
+                        <div class="uk-form-controls">
+                            <label>开始:</label>
+                            <input type="text" id="startdate" onfocus=" WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss', maxDate: '#F{$dp.$D(\'enddate\')||\'2030-10-01\'}' }) " style="width: 165px" />
+                            <label>结束:</label>
+                            <input type="text" id="enddate" onfocus=" WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss', minDate: '#F{$dp.$D(\'startdate\')}', maxDate: '2030-10-01' }) " style="width: 165px" />
+                        </div>
+                    </div>
 
-                <div class="uk-form-row">
-                    <label class="uk-form-label">定时切换图片</label>
-                    <div id="wraptrnsrc" style="display: inline">
-                        <!-- <select id="trnsrc" size="1"></select>-->
-                        <div class="uk-button-dropdown" data-uk-dropdown="">
-                            <button class="uk-button" id="trnsrctip">选择图片<i class="uk-icon-caret-down"></i></button>
-                            <div class="uk-dropdown">
-                                <ul class="uk-nav uk-nav-dropdown" id="trnsrc">
-                                    <li><a href="#">Item</a></li>
-                                </ul>
+                    <div class="uk-form-row">
+                        <label><input type="checkbox" id="dayhours">超过24小时转换为天</label>
+                    </div>
+
+                    <div class="uk-form-row">
+                        <label class="uk-form-label">倒计时字体</label>
+                        <div class="fontdemo">
+                            8天08时08分08秒
+                        </div>
+                        <select id="fontfamily"></select>
+                        <select id="fontsize"></select>
+                        <input type='text' id="fontcolor" />
+                    </div>
+
+                    <div class="uk-form-row">
+                        <label class="uk-form-label">定时切换图片</label>
+                        <div id="wraptrnsrc" style="display: inline">
+                            <!-- <select id="trnsrc" size="1"></select>-->
+                            <div class="uk-button-dropdown" data-uk-dropdown="">
+                                <button class="uk-button" id="trnsrctip">选择图片<i class="uk-icon-caret-down"></i></button>
+                                <div class="uk-dropdown">
+                                    <ul class="uk-nav uk-nav-dropdown" id="trnsrc">
+                                        <li><a href="#">Item</a></li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="uk-form-row" id="tblimg">
-                </div>
-
-                <div class="uk-form-row">
-                    <div class="uk-form-controls">
-                        <a class="uk-button uk-button-primary" href="javascript:void(0)" id="picsave">保存</a>
-                        <a class="uk-button btnhidden" href="javascript:void(0)">隐藏</a>
+                    <div class="uk-form-row" id="tblimg">
                     </div>
-                </div>
-            </form>
+
+                    <div class="uk-form-row">
+                        <div class="uk-form-controls">
+                            <a class="uk-button uk-button-primary" href="javascript:void(0)" id="picsave">保存</a>
+                            <a class="uk-button btnhidden" href="javascript:void(0)">隐藏</a>
+                        </div>
+                    </div>
+</form>
         </div>
     </div>
     <div class="uk-container baritem" style="padding: 0; display: none" id="baritem2">
@@ -244,6 +276,8 @@
                             <label for="linktype3">锚点</label>
                             <input id="linktype4" value="countdown" type="radio" name="linktype">
                             <label for="linktype4">倒计时</label>
+                            <input id="linktype5" value="tab" type="radio" name="linktype">
+                            <label for="linktype5">Tab标签</label>
                         </div>
                     </div>
                 </div>
